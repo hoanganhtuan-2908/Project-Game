@@ -1,27 +1,55 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Queen : Piece
+public class Queen : ChessPiece
 {
-    void Start()
+    public override List<Vector2Int> GetLegalMoves
+    (
+        ref ChessPiece[,] board,
+        int tileCountX,
+        int tileCountY
+    )
     {
-        Debug.Log("Queen script is working!");
-    }
+        List<Vector2Int> legalMoves =
+            new List<Vector2Int>();
 
-    public bool CanMove(int targetX, int targetY)
-    {
-        int dx = Mathf.Abs(targetX - x);
-        int dy = Mathf.Abs(targetY - y);
-
-        if (x == targetX || y == targetY)
+        int[] directionsX =
         {
-            return true;
+            1, -1, 0, 0,
+            1, 1, -1, -1
+        };
+
+        int[] directionsZ =
+        {
+            0, 0, 1, -1,
+            1, -1, 1, -1
+        };
+
+        for (int dir = 0; dir < 8; dir++)
+        {
+            int x = currentX;
+            int z = currentZ;
+
+            while (true)
+            {
+                x += directionsX[dir];
+                z += directionsZ[dir];
+
+                if (x < 0 ||
+                    x >= tileCountX ||
+                    z < 0 ||
+                    z >= tileCountY)
+                {
+                    break;
+                }
+
+                legalMoves.Add
+                (
+                    new Vector2Int(x, z)
+                );
+            }
         }
 
-        if (dx == dy)
-        {
-            return true;
-        }
-
-        return false;
+        return legalMoves;
     }
 }

@@ -44,9 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd19bd38f5e208b42bc8fb29fb5e48f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::King
-  x: 0
-  y: 0
-  isWhite: 0
+  Team: 0
+  Type: 0
+  currentX: 0
+  currentZ: 0
 --- !u!1 &1128915672101137702
 GameObject:
   m_ObjectHideFlags: 0
@@ -91,9 +92,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 710ca85d38434ed4a9567b030153722b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Queen
-  x: 0
-  y: 0
-  isWhite: 0
+  Team: 0
+  Type: 0
+  currentX: 0
+  currentZ: 0
 --- !u!1 &5533524228006525466
 GameObject:
   m_ObjectHideFlags: 0
@@ -106,7 +108,7 @@ GameObject:
   - component: {fileID: -6321074432113029105}
   m_Layer: 0
   m_Name: BoardSetup
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -220,9 +222,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 710ca85d38434ed4a9567b030153722b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Queen
-  x: 0
-  y: 0
-  isWhite: 0
+  Team: 0
+  Type: 0
+  currentX: 0
+  currentZ: 0
 --- !u!1 &7005998664424706709
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,9 +270,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd19bd38f5e208b42bc8fb29fb5e48f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::King
-  x: 0
-  y: 0
-  isWhite: 0
+  Team: 0
+  Type: 0
+  currentX: 0
+  currentZ: 0
 --- !u!1001 &93584463768507108
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -786,9 +790,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 710ca85d38434ed4a9567b030153722b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Queen
-  x: 0
-  y: 0
-  isWhite: 0
+  Team: 0
+  Type: 0
+  currentX: 0
+  currentZ: 0
 --- !u!1001 &2114454511409750726
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1548,9 +1553,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd19bd38f5e208b42bc8fb29fb5e48f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::King
-  x: 0
-  y: 0
-  isWhite: 0
+  Team: 0
+  Type: 0
+  currentX: 0
+  currentZ: 0
 --- !u!4 &4173919529950111108 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 252818577318772155, guid: bfe92f8a7302f214ab4f0121c36f3fcc, type: 3}
