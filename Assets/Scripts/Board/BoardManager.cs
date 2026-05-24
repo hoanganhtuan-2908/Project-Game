@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BoardManager : MonoBehaviour
 {
@@ -6,10 +8,19 @@ public class BoardManager : MonoBehaviour
 
     private Tile[,] tiles;
 
-    void Start()
+    private ChessPiece[,] chessPieces =
+        new ChessPiece[8, 8];
 
+    private ChessPiece selectedPiece;
+
+    void Start()
     {
         GenerateBoard();
+    }
+
+    void Update()
+    {
+        HandleMouseInput();
     }
 
     void GenerateBoard()
@@ -20,15 +31,26 @@ public class BoardManager : MonoBehaviour
         {
             for (int y = 0; y < boardSize; y++)
             {
-                GameObject tileObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                GameObject tileObject =
+                    GameObject.CreatePrimitive
+                    (
+                        PrimitiveType.Cube
+                    );
 
-                tileObject.name = $"Tile {x},{y}";
+                tileObject.name =
+                    $"Tile {x},{y}";
 
-                tileObject.transform.parent = transform;
+                tileObject.transform.parent =
+                    transform;
 
-                tileObject.transform.position = new Vector3(x, 0, y);
+                tileObject.transform.position =
+                    new Vector3(x, 0, y);
 
-                Tile tile = tileObject.AddComponent<Tile>();
+                tileObject.transform.localScale =
+                    new Vector3(1, 0.1f, 1);
+
+                Tile tile =
+                    tileObject.AddComponent<Tile>();
 
                 tile.x = x;
                 tile.y = y;
@@ -36,5 +58,64 @@ public class BoardManager : MonoBehaviour
                 tiles[x, y] = tile;
             }
         }
+    }
+
+    void HandleMouseInput()
+    {
+        // check mouse
+        if (Mouse.current == null)
+        {
+            Debug.Log("MOUSE IS NULL");
+            return;
+        }
+
+        // check camera
+        if (Camera.main == null)
+        {
+            Debug.Log("MAIN CAMERA IS NULL");
+            return;
+        }
+
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            Debug.Log("CLICK");
+
+            Vector2 mousePosition =
+                Mouse.current.position.ReadValue();
+
+            Ray ray =
+                Camera.main.ScreenPointToRay(mousePosition);
+
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                Debug.Log("HIT: " + hit.transform.name);
+            }
+            else
+            {
+                Debug.Log("NOTHING HIT");
+            }
+        }
+    }
+    void MovePiece
+    (
+        ChessPiece piece,
+        int x,
+        int y
+    )
+    {
+        piece.currentX = x;
+        piece.currentZ = y;
+
+        piece.transform.position =
+            new Vector3(x, 0.5f, y);
+
+        Debug.Log
+        (
+            piece.name +
+            " moved to " +
+            x + "," + y
+        );
     }
 }
