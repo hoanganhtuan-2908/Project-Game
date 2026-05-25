@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(IOjectTweener))]
+[RequireComponent(typeof(IObjectTweener))]
 [RequireComponent(typeof(MaterialSetter))]
 public abstract class Piece : MonoBehaviour
 {
@@ -11,17 +11,19 @@ public abstract class Piece : MonoBehaviour
     public Vector2Int CurrentPosition { get; set; }
     public TeamColor Team { get; set; }
     public bool HasMoved { get;private set; }
+    public Vector2Int occupiedSquare { get; internal set; }
 
     public List<Vector2Int> GetLegalMoves;
 
-    private IOjectTweener Tweener;
+    private IObjectTweener Tweener;
+   
 
     public abstract List<Vector2Int> GetLegalMovesForPiece();
 
     public void Awake()
     {
         GetLegalMoves = new List<Vector2Int>();
-        Tweener = GetComponent<IOjectTweener>();
+        Tweener = GetComponent<IObjectTweener>();
         MaterialSetter = GetComponent<MaterialSetter>();
         HasMoved = false;
     }
@@ -47,6 +49,10 @@ public abstract class Piece : MonoBehaviour
 
     public virtual void MovePiece(Vector2Int coords)
     {
+        Vector3 targetPosition = Board.CalcPositionFromCoords(coords);
+        occupiedSquare = coords;
+        HasMoved = true;
+        Tweener.MoveTo(transform, targetPosition);
     }
 
     protected void TryToAddMove(Vector2Int coords)
@@ -60,5 +66,10 @@ public abstract class Piece : MonoBehaviour
         CurrentPosition = coords;
         this.Board = board;
         transform.position = Board.CalcPositionFromCoords(coords);
+    }
+
+    internal void SelectAvaliableSquares()
+    {
+        throw new NotImplementedException();
     }
 }
