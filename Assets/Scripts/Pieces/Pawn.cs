@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Queen : Piece
+public class Pawn : Piece
 {
     public override List<Vector2Int> GetLegalMovesForPiece()
     {
