@@ -1,16 +1,33 @@
 using System;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Collections;
 
 [RequireComponent(typeof(PieceCreator))]
 public class ChessGameController : MonoBehaviour
 {
     [SerializeField] private BoardLayout StartingBoardLayout;
-    private PieceCreator piecesCreator;
     [SerializeField] private Board board;
+
+    private PieceCreator piecesCreator;
+    private ChessPlayer whitePlayer;
+    private ChessPlayer blackPlayer;
+    private ChessPlayer activeplayer;
 
     private void Awake()
     {
+       SetDependencies();
+       CreatePlayers(); 
+
+    }
+    private void SetDependencies()
+    {
         piecesCreator = GetComponent<PieceCreator>();
+    }
+    private void CreatePlayers()
+    {
+        whitePlayer = new ChessPlayer(TeamColor.White, board);
+        blackPlayer = new ChessPlayer(TeamColor.Black, board);
     }
 
     void Start()
@@ -20,10 +37,13 @@ public class ChessGameController : MonoBehaviour
 
     private void StartNewGame()
     {
-        CreatePiecesFromBoardLayout(StartingBoardLayout);
+        board.SetDependencies(this);
+        CreatePiecesFromLayout(StartingBoardLayout);
+        activeplayer = whitePlayer;
+        GenerateAllPosiblePlayerMoves(activeplayer);
     }
 
-    private void CreatePiecesFromBoardLayout(BoardLayout Layout)
+    private void CreatePiecesFromLayout(BoardLayout Layout)
     {
         for (int i = 0; i < Layout.GetPieceCount(); i++)
         {
@@ -37,6 +57,7 @@ public class ChessGameController : MonoBehaviour
         }
     }
 
+
     private void CreatePieceAndInitialize(Vector2Int squareCoords, TeamColor team, Type type)
     {
         Piece newPiece = piecesCreator.CreatePieceOfType(type).GetComponent<Piece>();
@@ -45,4 +66,30 @@ public class ChessGameController : MonoBehaviour
         Material materialForTeam = piecesCreator.GetMaterialForTeam(team);
         newPiece.SetMaterial(materialForTeam);
     }
+    private void GenerateAllPosiblePlayerMoves(ChessPlayer player)
+    {
+        player.GenerateAllPossibleMoves();
+    }
+    public bool IsTeamTurnActive(TeamColor team)
+    {
+        return activeplayer.Team == team;
+    }
+    public void EndTurn()
+    {
+        GenerateAllPosiblePlayerMoves(activeplayer);
+        GenerateAllPosiblePlayerMoves(GetOpponentToPlayer(activeplayer));
+        ChangeActiveteam();
+
+    }
+    private void ChangeActiveteam()
+    {
+        activeplayer = activeplayer == whitePlayer ? blackPlayer : whitePlayer;
+    }
+
+    private ChessPlayer GetOpponentToPlayer(ChessPlayer player)
+    {
+        return player == whitePlayer ? blackPlayer : whitePlayer;
+    }
+
+
 }
