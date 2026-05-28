@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -1222426682794277746}
   - component: {fileID: 5231439014813621355}
   - component: {fileID: 8154465672463205060}
+  - component: {fileID: -6466407760835019588}
   m_Layer: 0
   m_Name: Rook
   m_TagString: Untagged
@@ -130,3 +131,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InstantTweener
+--- !u!65 &-6466407760835019588
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 125018}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0688708, y: 1.8515171, z: 1.0526323}
+  m_Center: {x: 0.00000014901161, y: 0.75352746, z: 0.016364753}

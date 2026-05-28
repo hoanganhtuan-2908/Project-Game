@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4250185133985494229}
   - component: {fileID: 2636632575407672201}
   - component: {fileID: 1208531454933644024}
+  - component: {fileID: 5297631800295804264}
   m_Layer: 0
   m_Name: Knight
   m_TagString: Untagged
@@ -130,3 +131,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InstantTweener
+--- !u!65 &5297631800295804264
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 196802}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.0526323, y: 2.304227, z: 1.0904684}
+  m_Center: {x: -0.016363293, y: 0.97988236, z: 0}

@@ -91,7 +91,7 @@ public class Board : MonoBehaviour
         grid[oldCoords.x, oldCoords.y] = oldpiece;
     }
 
-    private Piece GetPieceOnSquare(Vector2Int coords)
+    public Piece GetPieceOnSquare(Vector2Int coords)
     {
         if(CheckIfCoordinatedAreOnBoard(coords))
         
@@ -99,7 +99,7 @@ public class Board : MonoBehaviour
             return null;
     }
 
-    private bool CheckIfCoordinatedAreOnBoard(Vector2Int coords)
+    public bool CheckIfCoordinatedAreOnBoard(Vector2Int coords)
     {
         if(coords.x < 0 || coords.x >= BOARD_SIZE || coords.y < 0 || coords.y >= BOARD_SIZE)
         

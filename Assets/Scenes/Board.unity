@@ -119,6 +119,25 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &51555656 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7829320912442785233, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+  m_PrefabInstance: {fileID: 173731904}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &51555658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 51555656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cb71e90debfbcc458808542434c6c61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Board
+  bottomLeftSquareTransform: {fileID: 664511171}
+  squareSize: 1
 --- !u!1 &148035160
 GameObject:
   m_ObjectHideFlags: 0
@@ -167,9 +186,21 @@ PrefabInstance:
       propertyPath: bottomLeftSquareTransform
       value: 
       objectReference: {fileID: 664511171}
+    - target: {fileID: 4118276750362446940, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+      propertyPath: m_TagString
+      value: MainCamera
+      objectReference: {fileID: 0}
     - target: {fileID: 5533524228006525466, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
       propertyPath: m_Name
       value: BoardSetup
+      objectReference: {fileID: 0}
+    - target: {fileID: 5533524228006525466, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+      propertyPath: m_TagString
+      value: MainCamera
+      objectReference: {fileID: 0}
+    - target: {fileID: 7030938855409833357, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+      propertyPath: m_TagString
+      value: MainCamera
       objectReference: {fileID: 0}
     - target: {fileID: 7112502748406316436, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -210,6 +241,14 @@ PrefabInstance:
     - target: {fileID: 7112502748406316436, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7314937225635388727, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+      propertyPath: m_TagString
+      value: MainCamera
+      objectReference: {fileID: 0}
+    - target: {fileID: 7829320912442785233, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+      propertyPath: m_TagString
+      value: MainCamera
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -253,24 +292,28 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7112502748406316436, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 664511171}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5533524228006525466, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1659280336}
+    - targetCorrespondingSourceObject: {fileID: 5533524228006525466, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1659280339}
+    - targetCorrespondingSourceObject: {fileID: 5533524228006525466, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1659280338}
+    - targetCorrespondingSourceObject: {fileID: 5533524228006525466, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1659280337}
+    - targetCorrespondingSourceObject: {fileID: 7829320912442785233, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 51555658}
   m_SourcePrefab: {fileID: 100100000, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
 --- !u!4 &248042926 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7112502748406316436, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
   m_PrefabInstance: {fileID: 173731904}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &248042927 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: -6321074432113029105, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
-  m_PrefabInstance: {fileID: 173731904}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cb71e90debfbcc458808542434c6c61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BoardManager
 --- !u!1 &376015224
 GameObject:
   m_ObjectHideFlags: 0
@@ -409,7 +452,7 @@ GameObject:
   - component: {fileID: 664511171}
   m_Layer: 0
   m_Name: LeftBottomSquare
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -423,12 +466,76 @@ Transform:
   m_GameObject: {fileID: 664511170}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.42, y: 3.16, z: -2.69}
+  m_LocalPosition: {x: -2.42, y: 2.94, z: -2.42}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 248042926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1659280335 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5533524228006525466, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
+  m_PrefabInstance: {fileID: 173731904}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1659280336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1659280335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cb71e90debfbcc458808542434c6c61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Board
+  bottomLeftSquareTransform: {fileID: 664511171}
+  squareSize: 1
+--- !u!114 &1659280337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1659280335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3e31839ee4fa6d45ba14d17bcf824d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColliderInputReciever
+--- !u!65 &1659280338
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1659280335}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 8.0081, y: 16.291176, z: 3.9161644}
+  m_Center: {x: 3.5040498, y: 7.64559, z: -1.4580827}
+--- !u!114 &1659280339
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1659280335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 055091c6b683e31409a767ddc9a7bd3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardInputHandler
 --- !u!1 &1668164536
 GameObject:
   m_ObjectHideFlags: 0
@@ -472,9 +579,12 @@ GameObject:
   - component: {fileID: 1928919275}
   - component: {fileID: 1928919274}
   - component: {fileID: 1928919273}
+  - component: {fileID: 1928919278}
+  - component: {fileID: 1928919277}
+  - component: {fileID: 1928919276}
   m_Layer: 0
   m_Name: GameMaster
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -492,7 +602,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChessGameController
   StartingBoardLayout: {fileID: 11400000, guid: 0ad959c07ab325b46a070a057bf7ad0d, type: 2}
-  board: {fileID: 248042927}
+  board: {fileID: 1659280336}
 --- !u!114 &1928919274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -529,6 +639,44 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1928919276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1928919272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 055091c6b683e31409a767ddc9a7bd3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardInputHandler
+--- !u!114 &1928919277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1928919272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cb71e90debfbcc458808542434c6c61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Board
+  bottomLeftSquareTransform: {fileID: 0}
+  squareSize: 0
+--- !u!114 &1928919278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1928919272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3e31839ee4fa6d45ba14d17bcf824d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColliderInputReciever
 --- !u!1 &1933383808
 GameObject:
   m_ObjectHideFlags: 0
@@ -543,7 +691,7 @@ GameObject:
   - component: {fileID: 1933383809}
   m_Layer: 0
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
