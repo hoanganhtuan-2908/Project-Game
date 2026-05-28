@@ -48,7 +48,7 @@ public class Board : MonoBehaviour
         {
             if (piece != null && selectedPiece == piece)
                 DeselectPiece();
-            else if (piece != null && selectedPiece != piece && chessController.IsTeamTurnActive(piece.Team))
+                else if (piece != null && selectedPiece != piece && chessController.IsTeamTurnActive(piece.Team))
                 SelectedPiece(piece);
             else if (selectedPiece.CanMoveTo(coords))
                 OnSelectedPieceMoved(coords, selectedPiece);
@@ -123,4 +123,11 @@ public class Board : MonoBehaviour
         return false;
     }
 
+    public void SetPieceOnboard(Vector2Int coords, Piece piece)
+    {
+        if(CheckIfCoordinatedAreOnBoard(coords))
+        {
+            grid[coords.x, coords.y] = piece;
+        }               
+    }
 }

@@ -1,31 +1,28 @@
 using UnityEngine;
-using System.Collections.Generic;
-using System.Collections;
-using System.Xml.Serialization;
+using UnityEngine.InputSystem;
 
-public class ColliderInputReciever : InputReciever
+public class ColliderInputReciever : MonoBehaviour
 {
-    private Vector3 clickPossition;
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
-            {
-                clickPossition = hit.point;
-                OnInputRecieved();
-            }
+            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-        }
-    
-}
-public override void OnInputRecieved()
-    {
-       foreach (var handler in inputHandlers)
-        {
-            handler.ProcessInput(clickPossition, null, null);
+            if (Physics.Raycast(ray, out RaycastHit hit))
+            {
+                Debug.Log(hit.point);
+
+                Piece piece = hit.collider.GetComponent<Piece>();
+
+                if (piece != null)
+                {
+                    Vector2Int targetPos =
+                        piece.CurrentPosition + Vector2Int.up;
+
+                    piece.MovePiece(targetPos);
+                }
+            }
         }
     }
 }

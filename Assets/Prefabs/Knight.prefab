@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 464390}
   - component: {fileID: 3304258}
   - component: {fileID: 2374884}
-  - component: {fileID: -4576084748894612068}
   - component: {fileID: 4250185133985494229}
   - component: {fileID: 2636632575407672201}
+  - component: {fileID: 1208531454933644024}
   m_Layer: 0
   m_Name: Knight
   m_TagString: Untagged
@@ -93,18 +93,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &-4576084748894612068
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 196802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 212e539a18ea63b45a1c8045dcd8b26e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::IOjectTweener
 --- !u!114 &4250185133985494229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,3 +118,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Knight
   GetLegalMoves: []
+--- !u!114 &1208531454933644024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 196802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InstantTweener
