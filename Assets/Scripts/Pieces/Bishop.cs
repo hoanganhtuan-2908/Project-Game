@@ -5,6 +5,9 @@ public class Bishop : Piece
 {
     public override List<Vector2Int> GetLegalMovesForPiece()
     {
-        throw new System.NotImplementedException();
+        GetLegalMoves.Clear();
+        GetLegalMoves.Add(occupiedSquare + new Vector2Int(0, 1));
+        return GetLegalMoves;
+
     }
 }

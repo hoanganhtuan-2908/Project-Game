@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 438022}
   - component: {fileID: 3384614}
   - component: {fileID: 2313672}
-  - component: {fileID: 7666283761358284976}
   - component: {fileID: -5841569697343085242}
   - component: {fileID: 1664523477285364309}
+  - component: {fileID: 4209422071589332032}
   m_Layer: 0
   m_Name: King
   m_TagString: Untagged
@@ -93,18 +93,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &7666283761358284976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 130826}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 212e539a18ea63b45a1c8045dcd8b26e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::IOjectTweener
 --- !u!114 &-5841569697343085242
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,3 +118,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::King
   GetLegalMoves: []
+--- !u!114 &4209422071589332032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InstantTweener

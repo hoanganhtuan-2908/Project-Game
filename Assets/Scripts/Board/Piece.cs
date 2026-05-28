@@ -44,11 +44,12 @@ public abstract class Piece : MonoBehaviour
 
     public bool CanMoveTo(Vector2Int coords)
     {
-        return GetLegalMovesForPiece().Contains(coords);
+        return GetLegalMoves.Contains(coords);
     }
 
     public virtual void MovePiece(Vector2Int coords)
     {
+
         Vector3 targetPosition = Board.CalcPositionFromCoords(coords);
         occupiedSquare = coords;
         HasMoved = true;
@@ -68,8 +69,8 @@ public abstract class Piece : MonoBehaviour
         transform.position = Board.CalcPositionFromCoords(coords);
     }
 
-    internal void SelectAvaliableSquares()
+    public void SelectAvaliableSquares()
     {
-        throw new NotImplementedException();
+        GetLegalMovesForPiece();
     }
 }
