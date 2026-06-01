@@ -1,76 +1,77 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(IObjectTweener))]
 [RequireComponent(typeof(MaterialSetter))]
+[RequireComponent(typeof(IObjectTweener))]
 public abstract class Piece : MonoBehaviour
 {
-    private MaterialSetter MaterialSetter;
-    public Board Board { get; set; }
-    public Vector2Int CurrentPosition { get; set; }
-    public TeamColor Team { get; set; }
-    public bool HasMoved { get;private set; }
-    public Vector2Int occupiedSquare { get; internal set; }
+    [SerializeField] private MaterialSetter materialSetter;
+    public Board board { protected get; set; }
+    public Vector2Int occupiedSquare { get; set; }
+    public TeamColor team { get; set; }
+    public bool hasMoved { get; private set; }
+    public List<Vector2Int> avaliableMoves;
 
-    public List<Vector2Int> GetLegalMoves;
+    private IObjectTweener tweener;
 
-    private IObjectTweener Tweener;
-   
+    public abstract List<Vector2Int> SelectAvaliableSquares();
 
-    public abstract List<Vector2Int> GetLegalMovesForPiece();
-
-    public void Awake()
+    private void Awake()
     {
-        GetLegalMoves = new List<Vector2Int>();
-        Tweener = GetComponent<IObjectTweener>();
-        MaterialSetter = GetComponent<MaterialSetter>();
-        HasMoved = false;
+        avaliableMoves = new List<Vector2Int>();
+        tweener = GetComponent<IObjectTweener>();
+        materialSetter = GetComponent<MaterialSetter>();
+        hasMoved = false;
     }
 
-    public void SetMaterial(Material material)
+    public void SetMaterial(Material selectedMaterial)
     {
-        if(MaterialSetter == null)
-        {
-            MaterialSetter = GetComponent<MaterialSetter>();
-        }
-        MaterialSetter.SetMaterial(material);
+        materialSetter.SetSingleMaterial(selectedMaterial);
     }
 
-    public bool IsFromSameTeam(Piece otherPiece)
+    public bool IsFromSameTeam(Piece piece)
     {
-        return Team == otherPiece.Team;
+        return team == piece.team;
     }
 
     public bool CanMoveTo(Vector2Int coords)
     {
-        return GetLegalMoves.Contains(coords);
+        return avaliableMoves.Contains(coords);
     }
 
     public virtual void MovePiece(Vector2Int coords)
     {
-
-        Vector3 targetPosition = Board.CalcPositionFromCoords(coords);
+        Vector3 targetPosition = board.CalculatePositionFromCoords(coords);
         occupiedSquare = coords;
-        HasMoved = true;
-        Tweener.MoveTo(transform, targetPosition);
+        hasMoved = true;
+        tweener.MoveTo(transform, targetPosition);
     }
+
 
     protected void TryToAddMove(Vector2Int coords)
     {
-        GetLegalMoves.Add(coords);
+        avaliableMoves.Add(coords);
     }
 
-    internal void SetData(Vector2Int coords, TeamColor team, Board board)
+    public void SetData(Vector2Int coords, TeamColor team, Board board)
     {
-        this.Team = team;
-        CurrentPosition = coords;
-        this.Board = board;
-        transform.position = Board.CalcPositionFromCoords(coords);
+        this.team = team;
+        occupiedSquare = coords;
+        this.board = board;
+        transform.position = board.CalculatePositionFromCoords(coords);
     }
 
-    public void SelectAvaliableSquares()
+    public bool IsAttackingPieceOfType<T>() where T : Piece
     {
-        GetLegalMovesForPiece();
+        foreach (var square in avaliableMoves)
+        {
+            if (board.GetPieceOnSquare(square) is T)
+                return true;
+        }
+        return false;
     }
+
 }

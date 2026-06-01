@@ -1,27 +1,22 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
 
 public class Rook : Piece
 {
-    private Vector2Int[] directions = new Vector2Int[]
+    private Vector2Int[] directions = new Vector2Int[] { Vector2Int.left, Vector2Int.up, Vector2Int.right, Vector2Int.down };
+    public override List<Vector2Int> SelectAvaliableSquares()
     {
-         Vector2Int.left,
-         Vector2Int.right,
-         Vector2Int.up,
-         Vector2Int.down
-    };
-    public override List<Vector2Int> GetLegalMovesForPiece()
-    {
-        GetLegalMoves.Clear();
+        avaliableMoves.Clear();
+
         float range = Board.BOARD_SIZE;
         foreach (var direction in directions)
         {
             for (int i = 1; i <= range; i++)
             {
                 Vector2Int nextCoords = occupiedSquare + direction * i;
-                Piece piece = Board.GetPieceOnSquare(nextCoords);
-                if (!Board.CheckIfCoordinatedAreOnBoard(nextCoords))
+                Piece piece = board.GetPieceOnSquare(nextCoords);
+                if (!board.CheckIfCoordinatesAreOnBoard(nextCoords))
                     break;
                 if (piece == null)
                     TryToAddMove(nextCoords);
@@ -31,13 +26,11 @@ public class Rook : Piece
                     break;
                 }
                 else if (piece.IsFromSameTeam(this))
-                
                     break;
-                  
             }
-            
         }
-        return GetLegalMoves;
+        return avaliableMoves;
     }
-}
 
+
+}

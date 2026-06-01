@@ -1,40 +1,37 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PieceCreator : MonoBehaviour
+
+public class PiecesCreator : MonoBehaviour
 {
-    [SerializeField] private GameObject[] piecePrefabs;
-    [SerializeField] private Material BlackMaterial;
-    [SerializeField] private Material WhiteMaterial;
-
-
-    public Dictionary<string, GameObject> NameToPieceDictionary = new Dictionary<string, GameObject>();
+    [SerializeField] private GameObject[] piecesPrefabs;
+    [SerializeField] private Material blackMaterial;
+    [SerializeField] private Material whiteMaterial;
+    private Dictionary<string, GameObject> nameToPieceDict = new Dictionary<string, GameObject>();
 
     private void Awake()
     {
-        foreach (var piece in piecePrefabs)
+        foreach (var piece in piecesPrefabs)
         {
-            NameToPieceDictionary.Add(piece.GetComponent<Piece>().GetType().ToString(), piece);
+            nameToPieceDict.Add(piece.GetComponent<Piece>().GetType().ToString(), piece);
         }
-        
     }
 
-    public GameObject CreatePieceOfType(Type pieceType)
+    public GameObject CreatePiece(Type type)
     {
-        GameObject prefab = NameToPieceDictionary[pieceType.ToString()];
-        if(prefab)
+        GameObject prefab = nameToPieceDict[type.ToString()];
+        if (prefab)
         {
             GameObject newPiece = Instantiate(prefab);
             return newPiece;
-        }  
-            return null;
-
+        }
+        return null;
     }
 
-    public Material GetMaterialForTeam(TeamColor team)
+    public Material GetTeamMaterial(TeamColor team)
     {
-        return team == TeamColor.White ? WhiteMaterial : BlackMaterial;
+        return team == TeamColor.White ? whiteMaterial : blackMaterial;
     }
-
 }
