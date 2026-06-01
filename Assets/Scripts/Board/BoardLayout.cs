@@ -1,9 +1,12 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum TeamColor
 {
-    Black, White
+    Black = 0, White = 1
 }
 
 public enum PieceType
@@ -11,39 +14,36 @@ public enum PieceType
     Pawn, Bishop, Knight, Rook, Queen, King
 }
 
-
 [CreateAssetMenu(menuName = "Scriptable Objects/Board/Layout")]
 public class BoardLayout : ScriptableObject
 {
     [Serializable]
-    public class BoardSetup
+    private class BoardSquareSetup
     {
         public Vector2Int position;
-        public TeamColor color;
-        public PieceType type;
+        public PieceType pieceType;
+        public TeamColor teamColor;
     }
 
-    [SerializeField] private BoardSetup[] boards;
+    [SerializeField] private BoardSquareSetup[] boardSquares;
 
-
-    public int GetPieceCount()
+    public int GetPiecesCount()
     {
-        return boards.Length;
+        return boardSquares.Length;
     }
 
-    public Vector2Int GetPiecePositionAtIndex(int index)
-    {
-        return new Vector2Int(boards[index].position.x - 1, boards[index].position.y - 1);
-    }
 
-    public String GetPieceTypeAtIndex(int index)
+    public Vector2Int GetSquareCoordsAtIndex(int index)
     {
-        return boards[index].type.ToString();
+        return new Vector2Int(boardSquares[index].position.x - 1, boardSquares[index].position.y - 1);
     }
-
-    public TeamColor GetPieceTeamAtIndex(int index)
+    public string GetSquarePieceNameAtIndex(int index)
     {
-        return boards[index].color;
+        return boardSquares[index].pieceType.ToString();
+    }
+    public TeamColor GetSquareTeamColorAtIndex(int index)
+    {
+        return boardSquares[index].teamColor;
     }
 
 }

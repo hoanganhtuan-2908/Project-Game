@@ -136,6 +136,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb71e90debfbcc458808542434c6c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Board
+  bottomLeftSquareTransform: {fileID: 664511171}
+  squareSize: 1
 --- !u!114 &51555660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -565,6 +567,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb71e90debfbcc458808542434c6c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Board
+  bottomLeftSquareTransform: {fileID: 664511171}
+  squareSize: 1
 --- !u!114 &1659280337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -690,7 +694,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a20e3ee8cf96c44090957f5ec7fb986, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChessGameController
+  StartingBoardLayout: {fileID: 11400000, guid: 0ad959c07ab325b46a070a057bf7ad0d, type: 2}
+  board: {fileID: 1659280336}
 --- !u!114 &1928919274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -745,6 +751,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb71e90debfbcc458808542434c6c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Board
+  bottomLeftSquareTransform: {fileID: 0}
+  squareSize: 0
 --- !u!114 &1928919278
 MonoBehaviour:
   m_ObjectHideFlags: 0

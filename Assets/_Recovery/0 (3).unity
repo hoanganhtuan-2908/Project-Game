@@ -136,21 +136,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb71e90debfbcc458808542434c6c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Board
---- !u!114 &51555660
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 51555656}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5abbba322207b514891fc9802cd88387, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SquareSelectorCreator
-  freeSquareMaterial: {fileID: 0}
-  enemySquareMaterial: {fileID: 0}
-  selectorPrefab: {fileID: 0}
+  bottomLeftSquareTransform: {fileID: 664511171}
+  squareSize: 1
 --- !u!1 &148035160
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,15 +305,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5533524228006525466, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1659280337}
-    - targetCorrespondingSourceObject: {fileID: 5533524228006525466, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1659280340}
     - targetCorrespondingSourceObject: {fileID: 7829320912442785233, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 51555658}
-    - targetCorrespondingSourceObject: {fileID: 7829320912442785233, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 51555660}
   m_SourcePrefab: {fileID: 100100000, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
 --- !u!4 &248042926 stripped
 Transform:
@@ -491,63 +472,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 248042926}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1400543350
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 196866, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_Name
-      value: Bishop
-      objectReference: {fileID: 0}
-    - target: {fileID: 470440, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 3.73
-      objectReference: {fileID: 0}
-    - target: {fileID: 470440, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 3.07
-      objectReference: {fileID: 0}
-    - target: {fileID: 470440, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 470440, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 470440, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 470440, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 470440, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 470440, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 470440, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 470440, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
 --- !u!1 &1659280335 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5533524228006525466, guid: 55785f93ab38cee4488c85fd31396fa5, type: 3}
@@ -565,6 +489,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb71e90debfbcc458808542434c6c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Board
+  bottomLeftSquareTransform: {fileID: 664511171}
+  squareSize: 1
 --- !u!114 &1659280337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -610,21 +536,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 055091c6b683e31409a767ddc9a7bd3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoardInputHandler
---- !u!114 &1659280340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1659280335}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5abbba322207b514891fc9802cd88387, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SquareSelectorCreator
-  freeSquareMaterial: {fileID: 0}
-  enemySquareMaterial: {fileID: 0}
-  selectorPrefab: {fileID: 0}
 --- !u!1 &1668164536
 GameObject:
   m_ObjectHideFlags: 0
@@ -671,7 +582,6 @@ GameObject:
   - component: {fileID: 1928919278}
   - component: {fileID: 1928919277}
   - component: {fileID: 1928919276}
-  - component: {fileID: 1928919279}
   m_Layer: 0
   m_Name: GameMaster
   m_TagString: MainCamera
@@ -690,7 +600,9 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a20e3ee8cf96c44090957f5ec7fb986, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChessGameController
+  StartingBoardLayout: {fileID: 11400000, guid: 0ad959c07ab325b46a070a057bf7ad0d, type: 2}
+  board: {fileID: 1659280336}
 --- !u!114 &1928919274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -703,9 +615,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01acf34334996674e92779ffe088f4fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PieceCreator
-  piecesPrefabs: []
-  blackMaterial: {fileID: 0}
-  whiteMaterial: {fileID: 0}
+  piecePrefabs:
+  - {fileID: 125018, guid: efae4103460469049995f2ac51ae410d, type: 3}
+  - {fileID: 196866, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
+  - {fileID: 196802, guid: f80f6caa6dce0164d806b1a07ccf9b89, type: 3}
+  - {fileID: 130826, guid: 64099beec35f5ac40b3c0083cb3f3bad, type: 3}
+  - {fileID: 184594, guid: 9d9b4dc947aaafb4d8bb6af36f65fad3, type: 3}
+  - {fileID: 138226, guid: 77b02b94d221d8c498660e48c3717687, type: 3}
+  BlackMaterial: {fileID: 2100000, guid: ae2390d50d3bd73408b3116b92290e23, type: 2}
+  WhiteMaterial: {fileID: 2100000, guid: 816278154dda0144c8c2dc0e40c82521, type: 2}
 --- !u!4 &1928919275
 Transform:
   m_ObjectHideFlags: 0
@@ -745,6 +663,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb71e90debfbcc458808542434c6c61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Board
+  bottomLeftSquareTransform: {fileID: 0}
+  squareSize: 0
 --- !u!114 &1928919278
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -757,21 +677,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3e31839ee4fa6d45ba14d17bcf824d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColliderInputReciever
---- !u!114 &1928919279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1928919272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5abbba322207b514891fc9802cd88387, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SquareSelectorCreator
-  freeSquareMaterial: {fileID: 0}
-  enemySquareMaterial: {fileID: 0}
-  selectorPrefab: {fileID: 0}
 --- !u!1 &1933383808
 GameObject:
   m_ObjectHideFlags: 0
@@ -917,4 +822,3 @@ SceneRoots:
   - {fileID: 1933383812}
   - {fileID: 148035161}
   - {fileID: 1928919275}
-  - {fileID: 1400543350}
