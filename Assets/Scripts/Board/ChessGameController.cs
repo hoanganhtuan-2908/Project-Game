@@ -1,56 +1,84 @@
+﻿
 using System;
-using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.SocialPlatforms;
 
-[RequireComponent(typeof(PieceCreator))]
-public class ChessGameController : MonoBehaviour
+[RequireComponent(typeof(PiecesCreator))]
+public abstract class ChessGameController : MonoBehaviour
 {
-    [SerializeField] private BoardLayout StartingBoardLayout;
-    [SerializeField] private Board board;
+    protected const byte SET_GAME_STATE_EVENT_CODE = 1;
 
-    private PieceCreator piecesCreator;
-    private ChessPlayer whitePlayer;
-    private ChessPlayer blackPlayer;
-    private ChessPlayer activeplayer;
+    [SerializeField] private BoardLayout startingBoardLayout;
+
+
+    private ChessUIManager UIManager;
+    private CameraSetup cameraSetup;
+    private Board board;
+    private PiecesCreator pieceCreator;
+    protected ChessPlayer whitePlayer;
+    protected ChessPlayer blackPlayer;
+    protected ChessPlayer activePlayer;
+
+
+    protected GameState state;
 
     private void Awake()
     {
-       SetDependencies();
-       CreatePlayers(); 
+        pieceCreator = GetComponent<PiecesCreator>();
+    }
 
-    }
-    private void SetDependencies()
+    internal void SetDependencies(CameraSetup cameraSetup, ChessUIManager UIManager, Board board)
     {
-        piecesCreator = GetComponent<PieceCreator>();
+        this.cameraSetup = cameraSetup;
+        this.UIManager = UIManager;
+        this.board = board;
     }
+
+    public void InitializeGame()
+    {
+        CreatePlayers();
+    }
+
+
     private void CreatePlayers()
     {
         whitePlayer = new ChessPlayer(TeamColor.White, board);
         blackPlayer = new ChessPlayer(TeamColor.Black, board);
     }
 
-    void Start()
+
+    public void StartNewGame()
     {
-        StartNewGame();
+        UIManager.OnGameStarted();
+        SetGameState(GameState.Init);
+        CreatePiecesFromLayout(startingBoardLayout);
+        activePlayer = whitePlayer;
+        GenerateAllPossiblePlayerMoves(activePlayer);
+        TryToStartThisGame();
+
     }
 
-    private void StartNewGame()
+    protected abstract void SetGameState(GameState state);
+    public abstract void TryToStartThisGame();
+    public abstract bool CanPerformMove();
+
+    internal bool IsGameInProgress()
     {
-        board.SetDependencies(this);
-        CreatePiecesFromLayout(StartingBoardLayout);
-        activeplayer = whitePlayer;
-        GenerateAllPosiblePlayerMoves(activeplayer);
+        return state == GameState.Play;
     }
 
-    private void CreatePiecesFromLayout(BoardLayout Layout)
+
+
+    private void CreatePiecesFromLayout(BoardLayout layout)
     {
-        for (int i = 0; i < Layout.GetPieceCount(); i++)
+        for (int i = 0; i < layout.GetPiecesCount(); i++)
         {
-            Vector2Int squareCoords = Layout.GetPiecePositionAtIndex(i);
-            string typeName = Layout.GetPieceTypeAtIndex(i);
-            TeamColor team = Layout.GetPieceTeamAtIndex(i);
-
+            Vector2Int squareCoords = layout.GetSquareCoordsAtIndex(i);
+            TeamColor team = layout.GetSquareTeamColorAtIndex(i);
+            string typeName = layout.GetSquarePieceNameAtIndex(i);
 
             Type type = Type.GetType(typeName);
             CreatePieceAndInitialize(squareCoords, team, type);
@@ -58,40 +86,112 @@ public class ChessGameController : MonoBehaviour
     }
 
 
-    private void CreatePieceAndInitialize(Vector2Int squareCoords, TeamColor team, Type type)
+
+    public void CreatePieceAndInitialize(Vector2Int squareCoords, TeamColor team, Type type)
     {
-        Piece newPiece = piecesCreator.CreatePieceOfType(type).GetComponent<Piece>();
+        Piece newPiece = pieceCreator.CreatePiece(type).GetComponent<Piece>();
         newPiece.SetData(squareCoords, team, board);
 
-        Material materialForTeam = piecesCreator.GetMaterialForTeam(team);
-        newPiece.SetMaterial(materialForTeam);
-        board.SetPieceOnboard(squareCoords, newPiece);
-        ChessPlayer currentPlayer = team == TeamColor.White ? whitePlayer : blackPlayer;    
-        currentPlayer.AddPice(newPiece);
+        Material teamMaterial = pieceCreator.GetTeamMaterial(team);
+        newPiece.SetMaterial(teamMaterial);
+
+        board.SetPieceOnBoard(squareCoords, newPiece);
+
+        ChessPlayer currentPlayer = team == TeamColor.White ? whitePlayer : blackPlayer;
+        currentPlayer.AddPiece(newPiece);
     }
-    private void GenerateAllPosiblePlayerMoves(ChessPlayer player)
+
+    internal void SetupCamera(TeamColor team)
+    {
+        cameraSetup.SetupCamera(team);
+    }
+
+
+
+    private void GenerateAllPossiblePlayerMoves(ChessPlayer player)
     {
         player.GenerateAllPossibleMoves();
     }
+
     public bool IsTeamTurnActive(TeamColor team)
     {
-        return activeplayer.Team == team;   
+        return activePlayer.team == team;
     }
+
     public void EndTurn()
     {
-        GenerateAllPosiblePlayerMoves(activeplayer);
-        GenerateAllPosiblePlayerMoves(GetOpponentToPlayer(activeplayer));
-        ChangeActiveteam();
-
+        GenerateAllPossiblePlayerMoves(activePlayer);
+        GenerateAllPossiblePlayerMoves(GetOpponentToPlayer(activePlayer));
+        if (CheckIfGameIsFinished())
+        {
+            EndGame();
+        }
+        else
+        {
+            ChangeActiveTeam();
+        }
     }
-    private void ChangeActiveteam()
+
+    private bool CheckIfGameIsFinished()
     {
-        activeplayer    = activeplayer == whitePlayer ? blackPlayer : whitePlayer;
+        Piece[] kingAttackingPieces = activePlayer.GetPieceAtackingOppositePiceOfType<King>();
+        if (kingAttackingPieces.Length > 0)
+        {
+            ChessPlayer oppositePlayer = GetOpponentToPlayer(activePlayer);
+            Piece attackedKing = oppositePlayer.GetPiecesOfType<King>().FirstOrDefault();
+            oppositePlayer.RemoveMovesEnablingAttakOnPieceOfType<King>(activePlayer, attackedKing);
+
+            int avaliableKingMoves = attackedKing.avaliableMoves.Count;
+            if (avaliableKingMoves == 0)
+            {
+                bool canCoverKing = oppositePlayer.CanHidePieceFromAttack<King>(activePlayer);
+                if (!canCoverKing)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    private void EndGame()
+    {
+        SetGameState(GameState.Finished);
+        UIManager.OnGameFinished(activePlayer.team.ToString());
+    }
+
+    public void RestartGame()
+    {
+        DestroyPieces();
+        board.OnGameRestarted();
+        whitePlayer.OnGameRestarted();
+        blackPlayer.OnGameRestarted();
+        StartNewGame();
+    }
+
+    private void DestroyPieces()
+    {
+        whitePlayer.activePieces.ForEach(p => Destroy(p.gameObject));
+        blackPlayer.activePieces.ForEach(p => Destroy(p.gameObject));
+    }
+
+    private void ChangeActiveTeam()
+    {
+        activePlayer = activePlayer == whitePlayer ? blackPlayer : whitePlayer;
     }
 
     private ChessPlayer GetOpponentToPlayer(ChessPlayer player)
     {
         return player == whitePlayer ? blackPlayer : whitePlayer;
+    }
+
+    internal void OnPieceRemoved(Piece piece)
+    {
+        ChessPlayer pieceOwner = (piece.team == TeamColor.White) ? whitePlayer : blackPlayer;
+        pieceOwner.RemovePiece(piece);
+    }
+
+    internal void RemoveMovesEnablingAttakOnPieceOfType<T>(Piece piece) where T : Piece
+    {
+        activePlayer.RemoveMovesEnablingAttakOnPieceOfType<T>(GetOpponentToPlayer(activePlayer), piece);
     }
 
 
