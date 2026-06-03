@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
@@ -15,8 +16,8 @@ public class ChessUIManager : MonoBehaviour
     [SerializeField] private Button blackTeamButtonButton;
 
     [Header("Texts")]
-    [SerializeField] private Text finishText;
-    [SerializeField] private Text connectionStatus;
+    [SerializeField] private TMP_Text finishText;
+    [SerializeField] private TMP_Text connectionStatus;
 
     [Header("Screen Gameobjects")]
     [SerializeField] private GameObject GameOverScreen;
@@ -25,7 +26,7 @@ public class ChessUIManager : MonoBehaviour
     [SerializeField] private GameObject GameModeSelectionScreen;
 
     [Header("Other UI")]
-    [SerializeField] private Dropdown gameLevelSelection;
+    [SerializeField] private TMP_Dropdown gameLevelSelection;
 
     private void Awake()
     {
