@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2897214376323042220}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.604, y: 0.846, z: -3.452}
+  m_LocalPosition: {x: -3.5, y: 0, z: -3.452}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -87,8 +87,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 10.399916, y: 0.5303657, z: 10.506024}
-  m_Center: {x: 4.5919485, y: 3.0043573, z: 4.519669}
+  m_Size: {x: 10.399916, y: 1.617557, z: 10.506024}
+  m_Center: {x: 4.5919485, y: 2.8705614, z: 4.519669}
 --- !u!114 &5065587393058641918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SinglePlayerBoard
   bottomLeftSquareTransform: {fileID: 7887348905767457129}
-  squareSize: 1.5
+  squareSize: 1
 --- !u!114 &4081201075579422436
 MonoBehaviour:
   m_ObjectHideFlags: 0
