@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 8462503131708411147}
   - component: {fileID: 7156076683607836242}
   - component: {fileID: 6986185141236817888}
-  - component: {fileID: 9132776565217079818}
   m_Layer: 0
   m_Name: Bishop
   m_TagString: Untagged
@@ -118,7 +117,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18ed725f2c641a047b9795c0f04b8331, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bishop
-  GetLegalMoves: []
+  materialSetter: {fileID: 0}
+  avaliableMoves: []
 --- !u!114 &6986185141236817888
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,24 +131,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InstantTweener
---- !u!65 &9132776565217079818
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 196866}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.1612562, y: 2.5846941, z: 1.1436143}
-  m_Center: {x: 0.00000017881393, y: 1.1201159, z: 0.017778158}

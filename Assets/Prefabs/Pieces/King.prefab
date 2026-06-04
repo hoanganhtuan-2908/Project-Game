@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: -5841569697343085242}
   - component: {fileID: 1664523477285364309}
   - component: {fileID: 4209422071589332032}
-  - component: {fileID: 4227477144868466620}
   m_Layer: 0
   m_Name: King
   m_TagString: Untagged
@@ -118,7 +117,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd19bd38f5e208b42bc8fb29fb5e48f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::King
-  GetLegalMoves: []
+  materialSetter: {fileID: 0}
+  avaliableMoves: []
 --- !u!114 &4209422071589332032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,24 +131,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InstantTweener
---- !u!65 &4227477144868466620
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 130826}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.3331149, y: 3.4780853, z: 1.3128619}
-  m_Center: {x: 0.00000020861626, y: 1.5668114, z: 0.020409167}

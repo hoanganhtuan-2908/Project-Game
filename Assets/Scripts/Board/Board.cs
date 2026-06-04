@@ -10,6 +10,7 @@ public abstract class Board : MonoBehaviour
 
     [SerializeField] private Transform bottomLeftSquareTransform;
     [SerializeField] private float squareSize;
+    [SerializeField] private bool bottomLeftIsSquareCenter = true;
 
     private Piece[,] grid;
     private Piece selectedPiece;
@@ -54,18 +55,43 @@ public abstract class Board : MonoBehaviour
 
     private Vector2Int CalculateCoordsFromPosition(Vector3 inputPosition)
     {
-        int x = Mathf.FloorToInt(transform.InverseTransformPoint(inputPosition).x / squareSize) + BOARD_SIZE / 2;
-        int y = Mathf.FloorToInt(transform.InverseTransformPoint(inputPosition).z / squareSize) + BOARD_SIZE / 2;
+        // Use board anchor axes so mapping stays correct even when board is rotated.
+        Vector3 fromBottomLeft = inputPosition - bottomLeftSquareTransform.position;
+        float projectedX = Vector3.Dot(fromBottomLeft, bottomLeftSquareTransform.right);
+        float projectedY = Vector3.Dot(fromBottomLeft, bottomLeftSquareTransform.forward);
+
+        Debug.Log(string.Format("[Coords] inputPos {0}, bottomLeft {1}, fromBottomLeft {2}", 
+            inputPosition, bottomLeftSquareTransform.position, fromBottomLeft));
+        Debug.Log(string.Format("[Coords] projectedX {0}, projectedY {1}, squareSize {2}", 
+            projectedX, projectedY, squareSize));
+
+        int x = bottomLeftIsSquareCenter
+            ? Mathf.RoundToInt(projectedX / squareSize)
+            : Mathf.FloorToInt(projectedX / squareSize);
+        int y = bottomLeftIsSquareCenter
+            ? Mathf.RoundToInt(projectedY / squareSize)
+            : Mathf.FloorToInt(projectedY / squareSize);
+        
+        Debug.Log(string.Format("[Coords] Final coords: ({0}, {1})", x, y));
         return new Vector2Int(x, y);
     }
 
     public void OnSquareSelected(Vector3 inputPosition)
     {
-        if (!chessController.CanPerformMove())
+        if (chessController == null)
+        {
+            Debug.LogWarning("[Board] chessController is null. Did you call SetDependencies?");
             return;
+        }
+        if (!chessController.CanPerformMove())
+        {
+            Debug.Log("[Board] CanPerformMove returned false.");
+            return;
+        }
 
         Vector2Int coords = CalculateCoordsFromPosition(inputPosition);
         Piece piece = GetPieceOnSquare(coords);
+        Debug.Log(string.Format("[Board] Click at {0} -> coords {1}, piece {2}", inputPosition, coords, piece != null ? piece.name : "null"));
         if (selectedPiece)
         {
             if (piece != null && selectedPiece == piece)

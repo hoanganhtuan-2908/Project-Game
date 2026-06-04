@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: -5226023794819408465}
   - component: {fileID: 7985176371617893886}
   - component: {fileID: 3085453671093790590}
-  - component: {fileID: 3489154920299426076}
   m_Layer: 0
   m_Name: Pawn
   m_TagString: MainCamera
@@ -118,7 +117,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce7fd373b09b3904fa61565ef551ec65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pawn
-  GetLegalMoves: []
+  materialSetter: {fileID: 0}
+  avaliableMoves: []
 --- !u!114 &3085453671093790590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,24 +131,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InstantTweener
---- !u!65 &3489154920299426076
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 138226}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1.0076536, y: 1.607325, z: 0.9923451}
-  m_Center: {x: 0, y: 0.8036625, z: 0.015426561}
