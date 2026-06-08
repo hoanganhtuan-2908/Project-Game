@@ -227,6 +227,8 @@ Transform:
   m_Children:
   - {fileID: 1487708641}
   - {fileID: 400543675}
+  - {fileID: 491059648}
+  - {fileID: 2000950201}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &252537359
@@ -910,6 +912,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 480419038}
   m_CullTransparentMesh: 1
+--- !u!1 &491059647
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 491059648}
+  m_Layer: 0
+  m_Name: SingleplayerBoardAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &491059648
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 491059647}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 148035161}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &606665774
 GameObject:
   m_ObjectHideFlags: 0
@@ -1441,7 +1474,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
+          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -2652,7 +2685,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -3040,9 +3073,10 @@ MonoBehaviour:
   multiplayerBoardPrefab: {fileID: 2751055998340609891, guid: 74bd13454fd764342ba1f5a6ac0091fb, type: 3}
   singleplayerBoardPrefab: {fileID: 3478403377100127840, guid: d557f67278c471a47baee0f3a041f219, type: 3}
   networkManager: {fileID: 1006925412}
-  cameraSetup: {fileID: 0}
+  cameraSetup: {fileID: 1933383813}
   uiManager: {fileID: 913348943}
-  boardAnchor: {fileID: 1487708641}
+  singleplayerBoardAnchor: {fileID: 491059648}
+  multiplayerBoardAnchor: {fileID: 2000950201}
 --- !u!4 &1255095389
 Transform:
   m_ObjectHideFlags: 0
@@ -3253,7 +3287,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1487708641}
   m_Layer: 0
-  m_Name: BoardAnchor
+  m_Name: OldBoardAnchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3268,7 +3302,7 @@ Transform:
   m_GameObject: {fileID: 1487708640}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -3, y: 0, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4255,6 +4289,7 @@ GameObject:
   - component: {fileID: 1933383811}
   - component: {fileID: 1933383810}
   - component: {fileID: 1933383809}
+  - component: {fileID: 1933383813}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
@@ -4380,6 +4415,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 70, y: 0, z: 0}
+--- !u!114 &1933383813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933383808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 223abebbe121fa9439c40228a05239cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraSetup
+  mainCamera: {fileID: 1933383811}
+--- !u!1 &2000950200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2000950201}
+  m_Layer: 0
+  m_Name: MultiplayerBoardAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2000950201
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000950200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3, y: 0, z: -3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 148035161}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2016437743
 GameObject:
   m_ObjectHideFlags: 0

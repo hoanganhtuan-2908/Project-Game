@@ -103,6 +103,12 @@ public abstract class ChessGameController : MonoBehaviour
 
     internal void SetupCamera(TeamColor team)
     {
+        if (cameraSetup == null)
+        {
+            Debug.LogError("cameraSetup is null in ChessGameController. Did you forget to assign CameraSetup in GameInitializer?");
+            return;
+        }
+
         cameraSetup.SetupCamera(team);
     }
 
