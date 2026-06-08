@@ -48,7 +48,7 @@ public class ChessPlayer
         return activePieces.Where(p => p is T).ToArray();
     }
 
-    public void RemoveMovesEnablingAttakOnPieceOfType<T>(ChessPlayer opponent, Piece selectedPiece) where T : Piece
+    public void RemoveMovesEnablingAttackOnPieceOfType<T>(ChessPlayer opponent, Piece selectedPiece) where T : Piece
     {
         List<Vector2Int> coordsToRemove = new List<Vector2Int>();
 
@@ -58,7 +58,7 @@ public class ChessPlayer
             Piece pieceOnCoords = board.GetPieceOnSquare(coords);
             board.UpdateBoardOnPieceMove(coords, selectedPiece.occupiedSquare, selectedPiece, null);
             opponent.GenerateAllPossibleMoves();
-            if (opponent.CheckIfIsAttacigPiece<T>())
+            if (opponent.CheckIfIsAttackigPiece<T>())
                 coordsToRemove.Add(coords);
             board.UpdateBoardOnPieceMove(selectedPiece.occupiedSquare, coords, selectedPiece, pieceOnCoords);
         }
@@ -69,7 +69,7 @@ public class ChessPlayer
 
     }
 
-    internal bool CheckIfIsAttacigPiece<T>() where T : Piece
+    public bool CheckIfIsAttackigPiece<T>() where T : Piece
     {
         foreach (var piece in activePieces)
         {
@@ -79,7 +79,7 @@ public class ChessPlayer
         return false;
     }
 
-    public bool CanHidePieceFromAttack<T>(ChessPlayer opponent) where T : Piece
+    internal  bool CanHidePieceFromAttack<T>(ChessPlayer opponent) where T : Piece
     {
         foreach (var piece in activePieces)
         {
@@ -88,7 +88,7 @@ public class ChessPlayer
                 Piece pieceOnCoords = board.GetPieceOnSquare(coords);
                 board.UpdateBoardOnPieceMove(coords, piece.occupiedSquare, piece, null);
                 opponent.GenerateAllPossibleMoves();
-                if (!opponent.CheckIfIsAttacigPiece<T>())
+                if (!opponent.CheckIfIsAttackigPiece<T>())
                 {
                     board.UpdateBoardOnPieceMove(piece.occupiedSquare, coords, piece, pieceOnCoords);
                     return true;

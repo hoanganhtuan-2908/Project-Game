@@ -116,7 +116,7 @@ public abstract class Board : MonoBehaviour
     private void SelectPiece(Vector2Int coords)
     {
         Piece piece = GetPieceOnSquare(coords);
-        chessController.RemoveMovesEnablingAttakOnPieceOfType<King>(piece);
+        //chessController.RemoveMovesEnablingAttakOnPieceOfType<King>(piece);
         SetSelectedPiece(coords);
         List<Vector2Int> selection = selectedPiece.avaliableMoves;
         ShowSelectionSquares(selection);
@@ -201,6 +201,12 @@ public abstract class Board : MonoBehaviour
     {
         if (piece)
         {
+            // Nếu ăn được vua
+            if (piece is King)
+            {
+                Debug.Log("King captured!");
+            }
+
             grid[piece.occupiedSquare.x, piece.occupiedSquare.y] = null;
             chessController.OnPieceRemoved(piece);
             Destroy(piece.gameObject);
