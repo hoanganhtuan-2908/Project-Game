@@ -133,7 +133,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MultiplayerBoard
   bottomLeftSquareTransform: {fileID: 5691488188807779650}
-  squareSize: 1.5
+  squareSize: 1
+  bottomLeftIsSquareCenter: 1
 --- !u!1 &7889879184090613362
 GameObject:
   m_ObjectHideFlags: 0
@@ -159,7 +160,7 @@ Transform:
   m_GameObject: {fileID: 7889879184090613362}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.5, y: 0.846, z: -3.452}
+  m_LocalPosition: {x: -3.598, y: 0.585, z: -3.587}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
