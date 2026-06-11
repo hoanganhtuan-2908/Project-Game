@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(MaterialSetter))]
 [RequireComponent(typeof(IObjectTweener))]
 public abstract class Piece : MonoBehaviour
 {
@@ -29,7 +28,11 @@ public abstract class Piece : MonoBehaviour
 
     public void SetMaterial(Material selectedMaterial)
     {
-        materialSetter.SetSingleMaterial(selectedMaterial);
+        // Bỏ qua nếu không có MaterialSetter hoặc material null (model đã có màu sẵn)
+        if (materialSetter != null && selectedMaterial != null)
+        {
+            materialSetter.SetSingleMaterial(selectedMaterial);
+        }
     }
 
     public bool IsFromSameTeam(Piece piece)

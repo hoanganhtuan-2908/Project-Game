@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -89,9 +89,25 @@ public abstract class ChessGameController : MonoBehaviour
 
     public void CreatePieceAndInitialize(Vector2Int squareCoords, TeamColor team, Type type)
     {
-        Piece newPiece = pieceCreator.CreatePiece(type).GetComponent<Piece>();
+        // Truyền thêm 'team' để PiecesCreator chọn đúng 1 trong 12 prefab của skin
+        GameObject pieceObject = pieceCreator.CreatePiece(type, team);
+        if (pieceObject == null)
+        {
+            Debug.LogError($"[ChessGameController] CreatePiece trả về null cho '{type.Name}' - '{team}'. Kiểm tra lại Active Skin trên PiecesCreator.");
+            return;
+        }
+
+        Piece newPiece = pieceObject.GetComponent<Piece>();
+        if (newPiece == null)
+        {
+            Debug.LogError($"[ChessGameController] Prefab '{pieceObject.name}' (loại: {type.Name}, đội: {team}) KHÔNG có component '{type.Name}' gắn vào! Hãy gắn script '{type.Name}.cs' vào root của prefab đó.");
+            Destroy(pieceObject);
+            return;
+        }
+
         newPiece.SetData(squareCoords, team, board);
 
+        // Nếu skin có Material ghi đè → áp dụng; nếu null → giữ màu sẵn của model
         Material teamMaterial = pieceCreator.GetTeamMaterial(team);
         newPiece.SetMaterial(teamMaterial);
 
@@ -100,6 +116,8 @@ public abstract class ChessGameController : MonoBehaviour
         ChessPlayer currentPlayer = team == TeamColor.White ? whitePlayer : blackPlayer;
         currentPlayer.AddPiece(newPiece);
     }
+
+
 
     internal void SetupCamera(TeamColor team)
     {
