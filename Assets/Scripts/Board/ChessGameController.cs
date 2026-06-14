@@ -14,9 +14,9 @@ public abstract class ChessGameController : MonoBehaviour
     [SerializeField] private BoardLayout startingBoardLayout;
 
 
-    private ChessUIManager UIManager;
+    protected ChessUIManager UIManager;
     private CameraSetup cameraSetup;
-    private Board board;
+    protected Board board;
     private PiecesCreator pieceCreator;
     protected ChessPlayer whitePlayer;
     protected ChessPlayer blackPlayer;
@@ -183,7 +183,7 @@ public abstract class ChessGameController : MonoBehaviour
         blackPlayer.activePieces.ForEach(p => Destroy(p.gameObject));
     }
 
-    private void ChangeActiveTeam()
+    protected virtual void ChangeActiveTeam()
     {
         activePlayer = activePlayer == whitePlayer ? blackPlayer : whitePlayer;
     }

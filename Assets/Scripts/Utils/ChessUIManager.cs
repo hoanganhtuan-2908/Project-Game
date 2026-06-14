@@ -35,6 +35,7 @@ public class ChessUIManager : MonoBehaviour
 
     private ChessSkin selectedSkin;
     public ChessSkin SelectedSkin => selectedSkin;
+    public ChessLevel SelectedLevel => (ChessLevel)gameLevelSelection.value;
 
     private ChessGameController activeController;
 
