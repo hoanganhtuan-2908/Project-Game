@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2122d9d400b1158448862d44625d05cd, type: 3}
+  m_Name: normal_skin
+  m_EditorClassIdentifier: Assembly-CSharp::ChessSkin
+  skinName: Defaul
+  whitePawn: {fileID: 138226, guid: 77b02b94d221d8c498660e48c3717687, type: 3}
+  whiteRook: {fileID: 125018, guid: efae4103460469049995f2ac51ae410d, type: 3}
+  whiteKnight: {fileID: 196802, guid: f80f6caa6dce0164d806b1a07ccf9b89, type: 3}
+  whiteBishop: {fileID: 196866, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
+  whiteQueen: {fileID: 184594, guid: 9d9b4dc947aaafb4d8bb6af36f65fad3, type: 3}
+  whiteKing: {fileID: 130826, guid: 64099beec35f5ac40b3c0083cb3f3bad, type: 3}
+  blackPawn: {fileID: 138226, guid: 77b02b94d221d8c498660e48c3717687, type: 3}
+  blackRook: {fileID: 125018, guid: efae4103460469049995f2ac51ae410d, type: 3}
+  blackKnight: {fileID: 196802, guid: f80f6caa6dce0164d806b1a07ccf9b89, type: 3}
+  blackBishop: {fileID: 196866, guid: 7b93083b2c9f97c408405b5974eed198, type: 3}
+  blackQueen: {fileID: 184594, guid: 9d9b4dc947aaafb4d8bb6af36f65fad3, type: 3}
+  blackKing: {fileID: 130826, guid: 64099beec35f5ac40b3c0083cb3f3bad, type: 3}
+  whiteMaterial: {fileID: 2100000, guid: 816278154dda0144c8c2dc0e40c82521, type: 2}
+  blackMaterial: {fileID: 2100000, guid: ae2390d50d3bd73408b3116b92290e23, type: 2}

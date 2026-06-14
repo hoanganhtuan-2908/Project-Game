@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Photon.Pun;
 
 public class GameInitializer : MonoBehaviour
@@ -74,12 +74,23 @@ public class GameInitializer : MonoBehaviour
 
         MultiplayerChessGameController controller = Instantiate(multiplayerControllerPrefab);
 
+        // Apply selected skin from UI Manager
+        if (uiManager != null && uiManager.SelectedSkin != null)
+        {
+            PiecesCreator creator = controller.GetComponent<PiecesCreator>();
+            if (creator != null)
+            {
+                creator.SetActiveSkin(uiManager.SelectedSkin);
+            }
+        }
+
         controller.SetDependencies(cameraSetup, uiManager, board);
         controller.InitializeGame();
         controller.SetNetworkManager(networkManager);
 
         networkManager.SetDependencies(controller);
         board.SetDependencies(controller);
+        uiManager.SetActiveController(controller);
 
         return controller;
     }
@@ -108,10 +119,21 @@ public class GameInitializer : MonoBehaviour
 
         SingleplayerChessGameController controller = Instantiate(singleplayerControllerPrefab);
 
+        // Apply selected skin from UI Manager
+        if (uiManager != null && uiManager.SelectedSkin != null)
+        {
+            PiecesCreator creator = controller.GetComponent<PiecesCreator>();
+            if (creator != null)
+            {
+                creator.SetActiveSkin(uiManager.SelectedSkin);
+            }
+        }
+
         controller.SetDependencies(cameraSetup, uiManager, board);
         controller.InitializeGame();
 
         board.SetDependencies(controller);
+        uiManager.SetActiveController(controller);
         controller.StartNewGame();
     }
 }

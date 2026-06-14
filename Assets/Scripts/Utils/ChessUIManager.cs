@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -24,14 +24,61 @@ public class ChessUIManager : MonoBehaviour
     [SerializeField] private GameObject ConnectScreen;
     [SerializeField] private GameObject TeamSelectionScreen;
     [SerializeField] private GameObject GameModeSelectionScreen;
+    [SerializeField] private GameObject PauseMenuScreen;
 
     [Header("Other UI")]
     [SerializeField] private TMP_Dropdown gameLevelSelection;
+
+    [Header("Skins/Models UI")]
+    [SerializeField] private TMP_Dropdown skinSelectionDropdown;
+    [SerializeField] private List<ChessSkin> availableSkins;
+
+    private ChessSkin selectedSkin;
+    public ChessSkin SelectedSkin => selectedSkin;
+
+    private ChessGameController activeController;
 
     private void Awake()
     {
         gameLevelSelection.AddOptions(Enum.GetNames(typeof(ChessLevel)).ToList());
         OnGameLaunched();
+    }
+
+    private void Start()
+    {
+        InitializeSkinSelection();
+    }
+
+    private void InitializeSkinSelection()
+    {
+        if (skinSelectionDropdown != null && availableSkins != null && availableSkins.Count > 0)
+        {
+            skinSelectionDropdown.ClearOptions();
+            List<string> options = availableSkins.Select(s => string.IsNullOrEmpty(s.skinName) ? s.name : s.skinName).ToList();
+            skinSelectionDropdown.AddOptions(options);
+
+            // Load saved skin preference
+            int savedIndex = PlayerPrefs.GetInt("SelectedSkinIndex", 0);
+            if (savedIndex >= availableSkins.Count || savedIndex < 0) 
+                savedIndex = 0;
+            
+            skinSelectionDropdown.value = savedIndex;
+            skinSelectionDropdown.RefreshShownValue();
+            selectedSkin = availableSkins[savedIndex];
+            
+            skinSelectionDropdown.onValueChanged.AddListener(OnSkinChanged);
+        }
+    }
+
+    private void OnSkinChanged(int index)
+    {
+        if (availableSkins != null && index >= 0 && index < availableSkins.Count)
+        {
+            selectedSkin = availableSkins[index];
+            PlayerPrefs.SetInt("SelectedSkinIndex", index);
+            PlayerPrefs.Save();
+            Debug.Log($"Skin changed to: {selectedSkin.skinName}");
+        }
     }
 
 
@@ -95,6 +142,10 @@ public class ChessUIManager : MonoBehaviour
         ConnectScreen.SetActive(false);
         connectionStatus.gameObject.SetActive(false);
         GameModeSelectionScreen.SetActive(false);
+        if (PauseMenuScreen != null)
+        {
+            PauseMenuScreen.SetActive(false);
+        }
     }
 
     public void SelectTeam(int team)
@@ -106,5 +157,55 @@ public class ChessUIManager : MonoBehaviour
     {
         Button buttonToDeactivate = occpiedTeam == TeamColor.White ? whiteTeamButtonButton : blackTeamButtonButton;
         buttonToDeactivate.interactable = false;
+    }
+
+    public void SetActiveController(ChessGameController controller)
+    {
+        activeController = controller;
+    }
+
+    public void TogglePauseMenu(bool isPaused)
+    {
+        if (PauseMenuScreen != null)
+        {
+            PauseMenuScreen.SetActive(isPaused);
+        }
+    }
+
+    public void OnResumeClicked()
+    {
+        if (activeController != null)
+        {
+            activeController.ResumeGame();
+        }
+    }
+
+    public void OnRestartClicked()
+    {
+        if (activeController != null)
+        {
+            activeController.ResumeGame();
+            activeController.RestartGame();
+        }
+    }
+
+    public void OnQuitClicked()
+    {
+        Time.timeScale = 1f;
+        TogglePauseMenu(false);
+
+        if (activeController != null)
+        {
+            Board board = FindObjectOfType<Board>();
+            if (board != null)
+            {
+                Destroy(board.gameObject);
+            }
+
+            Destroy(activeController.gameObject);
+            activeController = null;
+        }
+
+        OnGameLaunched();
     }
 }

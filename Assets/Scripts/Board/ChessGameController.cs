@@ -206,10 +206,43 @@ public abstract class ChessGameController : MonoBehaviour
         }
     }
 
-    //internal void RemoveMovesEnablingAttakOnPieceOfType<T>(Piece piece) where T : Piece
-    //{
-    //   activePlayer.RemoveMovesEnablingAttackOnPieceOfType<T>(GetOpponentToPlayer(activePlayer), piece);
-    //}
+    protected virtual void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (state == GameState.Play)
+            {
+                PauseGame();
+            }
+            else if (state == GameState.Paused)
+            {
+                ResumeGame();
+            }
+        }
+    }
 
+    public virtual void PauseGame()
+    {
+        if (state == GameState.Play)
+        {
+            SetGameState(GameState.Paused);
+            UIManager.TogglePauseMenu(true);
 
+            if (this is SingleplayerChessGameController)
+            {
+                Time.timeScale = 0f;
+            }
+        }
+    }
+
+    public virtual void ResumeGame()
+    {
+        if (state == GameState.Paused)
+        {
+            SetGameState(GameState.Play);
+            UIManager.TogglePauseMenu(false);
+
+            Time.timeScale = 1f;
+        }
+    }
 }
