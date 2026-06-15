@@ -1,27 +1,33 @@
+using System;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    [Header("UI Reference")]
-    [SerializeField] private ChessUIManager uiManager;
+    [Header("UI Panel")]
+    [SerializeField] private GameObject mainmenuPanel;
+    [SerializeField] private GameObject optionPanel;
 
-    /// <summary>
+    [Header("Music Settings UI")]
+    [SerializeField] private Slider volumeSlider;
+    [SerializeField] private Toggle muteToggle;
+
+    private void Start()
+    {
+        InitializeMusicSettings();
+    }
+
+
     /// Chuyển sang scene chơi đơn (Singleplayer)
-    /// </summary>
     public void PlaySinglePlayer()
     {
         Time.timeScale = 1f;
-        
-        // Đảm bảo lưu thiết lập trước khi chuyển cảnh
-        if (uiManager != null)
-        {
-            // ChessUIManager tự động lưu SelectedSkinIndex và SelectedLevel qua PlayerPrefs
-            Debug.Log($"[MainMenu] Khởi động Singleplayer với Skin: {uiManager.SelectedSkin?.skinName}, Độ khó: {uiManager.SelectedLevel}");
-        }
-
         SceneManager.LoadScene("SinglePlayer");
     }
+
 
     /// <summary>
     /// Kích hoạt giao diện kết nối mạng (Multiplayer)
@@ -29,17 +35,77 @@ public class MainMenu : MonoBehaviour
     public void PlayMultiPlayer()
     {
         Time.timeScale = 1f;
+        PlayerPrefs.SetInt("AutoStartMultiplayer", 1);
+        PlayerPrefs.Save();
 
-        // Nếu bạn thiết kế sảnh chờ (Lobby) trực tiếp trên scene MainMenu hiện tại:
-        if (uiManager != null)
+        SceneManager.LoadScene("Multiplayer");
+    }
+
+    public void openOption()
+    {
+        if (mainmenuPanel != null) { mainmenuPanel.SetActive(false); }
+        if (optionPanel != null) { optionPanel.SetActive(true); }
+    }
+
+    public void closeOption()
+    {
+        if (optionPanel != null) { optionPanel.SetActive(false); }
+        if (mainmenuPanel != null) { mainmenuPanel.SetActive(true); }
+    }
+
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
+    private void InitializeMusicSettings()
+    {
+        // Khởi tạo trạng thái Volume
+        if (volumeSlider != null) 
         {
-            uiManager.OnMultiPlayerModeSelected();
+            float savedVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+            volumeSlider.value = savedVolume;
+            volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+        }
+
+        // Khởi tạo trạng thái Mute
+        if (muteToggle != null)
+        {
+            bool savedMute = PlayerPrefs.GetInt("MusicMuted", 0) == 1;
+            muteToggle.isOn = savedMute;
+            muteToggle.onValueChanged.AddListener(OnMuteToggled);
+        }
+    }
+
+    private void OnVolumeChanged(float value)
+    {
+        if (FMODAudioManager.Instance != null)
+        {
+            FMODAudioManager.Instance.SetVolume(value);
         }
         else
         {
-            // Hoặc nếu sau này bạn muốn tách riêng 1 scene Lobby mạng:
-            // SceneManager.LoadScene("MultiplayerLobby");
-            Debug.LogWarning("[MainMenu] ChessUIManager is null. Không thể chuyển sang chế độ Multiplayer UI.");
+            PlayerPrefs.SetFloat("MusicVolume", value);
+            PlayerPrefs.Save();
         }
     }
+
+    private void OnMuteToggled(bool isMuted)
+    {
+        if (FMODAudioManager.Instance != null)
+        {
+            FMODAudioManager.Instance.SetMuted(isMuted);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("MusicMuted", isMuted ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+    }
+
+
 }

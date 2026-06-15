@@ -74,4 +74,13 @@ public class MultiplayerChessGameController : ChessGameController, IOnEventCallb
             return false;
         return true;
     }
+
+    public override bool IsLocalPlayerWinner(string winnerTeam)
+    {
+        if (localPlayer != null)
+        {
+            return winnerTeam == localPlayer.team.ToString();
+        }
+        return false;
+    }
 }

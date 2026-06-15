@@ -343,4 +343,9 @@ public class SingleplayerChessGameController : ChessGameController
 
         return c;
     }
+
+    public override bool IsLocalPlayerWinner(string winnerTeam)
+    {
+        return winnerTeam == localPlayerTeam.ToString();
+    }
 }

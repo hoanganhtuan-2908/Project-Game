@@ -64,6 +64,7 @@ public abstract class ChessGameController : MonoBehaviour
     protected abstract void SetGameState(GameState state);
     public abstract void TryToStartThisGame();
     public abstract bool CanPerformMove();
+    public abstract bool IsLocalPlayerWinner(String winnerTeam);
 
     internal bool IsGameInProgress()
     {

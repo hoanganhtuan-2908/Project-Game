@@ -67,6 +67,18 @@ public class ChessUIManager : MonoBehaviour
         OnGameLaunched();
     }
 
+
+    private void Start()
+    {
+        // Tự động kích hoạt Multiplayer nếu có cờ báo từ MainMenu
+        if (PlayerPrefs.GetInt("AutoStartMultiplayer", 0) == 1)
+        {
+            PlayerPrefs.SetInt("AutoStartMultiplayer", 0);
+            PlayerPrefs.Save();
+            OnMultiPlayerModeSelected();
+        }
+    }
+        
     private void InitializeSkinSelection()
     {
         if (skinSelectionDropdown != null && availableSkins != null && availableSkins.Count > 0)
@@ -135,6 +147,17 @@ public class ChessUIManager : MonoBehaviour
         if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(false);
         if (ConnectScreen != null) ConnectScreen.SetActive(false);
         if (finishText != null) finishText.text = string.Format("{0} won", winner);
+
+        // Phát nhạc thắng/thua
+        if (FMODAudioManager.Instance != null)
+        {
+            bool localPlayerWon = false;
+            if (activeController != null)
+            {
+                localPlayerWon = activeController.IsLocalPlayerWinner(winner);
+            }
+            FMODAudioManager.Instance.PlayGameFinishedTheme(localPlayerWon);
+        }
     }
 
     public void OnConnect()
@@ -175,6 +198,12 @@ public class ChessUIManager : MonoBehaviour
         if (PauseMenuScreen != null)
         {
             PauseMenuScreen.SetActive(false);
+        }
+
+        // Bắt đầu phát nhạc trận đấu
+        if (FMODAudioManager.Instance != null)
+        {
+            FMODAudioManager.Instance.PlayGameplayBGM();
         }
     }
 
@@ -234,6 +263,12 @@ public class ChessUIManager : MonoBehaviour
         Time.timeScale = 1f;
         TogglePauseMenu(false);
 
+        // Quay lại nhạc Menu chính
+        if (FMODAudioManager.Instance != null)
+        {
+            FMODAudioManager.Instance.PlayMenuTheme();
+        }
+
         // If we are in a gameplay scene (not MainMenu), load MainMenu scene
         if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "MainMenu")
         {
@@ -244,7 +279,7 @@ public class ChessUIManager : MonoBehaviour
             // Fallback for single-scene setup: clean up and show the mode selector UI
             if (activeController != null)
             {
-                Board board = FindObjectOfType<Board>();
+                Board board = FindAnyObjectByType<Board>();
                 if (board != null)
                 {
                     Destroy(board.gameObject);
