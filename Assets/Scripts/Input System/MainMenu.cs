@@ -20,6 +20,25 @@ public class MainMenu : MonoBehaviour
         InitializeMusicSettings();
     }
 
+    private void Update()
+    {
+        // Nhấn Esc để mở/đóng Options Panel ở Menu chính
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (optionPanel != null)
+            {
+                if (optionPanel.activeSelf)
+                {
+                    closeOption();
+                }
+                else
+                {
+                    openOption();
+                }
+            }
+        }
+    }
+
 
     /// Chuyển sang scene chơi đơn (Singleplayer)
     public void PlaySinglePlayer()
