@@ -35,19 +35,36 @@ public class ChessUIManager : MonoBehaviour
 
     private ChessSkin selectedSkin;
     public ChessSkin SelectedSkin => selectedSkin;
-    public ChessLevel SelectedLevel => (ChessLevel)gameLevelSelection.value;
+    public ChessLevel SelectedLevel
+    {
+        get
+        {
+            if (gameLevelSelection != null)
+            {
+                return (ChessLevel)gameLevelSelection.value;
+            }
+            return (ChessLevel)PlayerPrefs.GetInt("SelectedLevel", (int)ChessLevel.Regular);
+        }
+    }
 
     private ChessGameController activeController;
 
     private void Awake()
     {
-        gameLevelSelection.AddOptions(Enum.GetNames(typeof(ChessLevel)).ToList());
-        OnGameLaunched();
-    }
-
-    private void Start()
-    {
+        if (gameLevelSelection != null)
+        {
+            gameLevelSelection.ClearOptions();
+            gameLevelSelection.AddOptions(Enum.GetNames(typeof(ChessLevel)).ToList());
+            
+            // Load saved level preference
+            int savedLevel = PlayerPrefs.GetInt("SelectedLevel", (int)ChessLevel.Regular);
+            gameLevelSelection.value = savedLevel;
+            gameLevelSelection.RefreshShownValue();
+            
+            gameLevelSelection.onValueChanged.AddListener(OnLevelChanged);
+        }
         InitializeSkinSelection();
+        OnGameLaunched();
     }
 
     private void InitializeSkinSelection()
@@ -82,67 +99,79 @@ public class ChessUIManager : MonoBehaviour
         }
     }
 
-
+    private void OnLevelChanged(int value)
+    {
+        PlayerPrefs.SetInt("SelectedLevel", value);
+        PlayerPrefs.Save();
+        Debug.Log($"Level changed to: {(ChessLevel)value}");
+    }
 
     internal void OnGameLaunched()
     {
-        GameOverScreen.SetActive(false);
-        TeamSelectionScreen.SetActive(false);
-        ConnectScreen.SetActive(false);
-        GameModeSelectionScreen.SetActive(true);
+        if (GameOverScreen != null) GameOverScreen.SetActive(false);
+        if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(false);
+        if (ConnectScreen != null) ConnectScreen.SetActive(false);
+        if (GameModeSelectionScreen != null) GameModeSelectionScreen.SetActive(true);
     }
 
     public void OnSinglePlayerModeSelected()
     {
-        GameOverScreen.SetActive(false);
-        TeamSelectionScreen.SetActive(false);
-        ConnectScreen.SetActive(false);
-        GameModeSelectionScreen.SetActive(false);
+        Time.timeScale = 1f;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("SinglePlayer");
     }
 
     public void OnMultiPlayerModeSelected()
     {
-        connectionStatus.gameObject.SetActive(true);
-        GameOverScreen.SetActive(false);
-        TeamSelectionScreen.SetActive(false);
-        ConnectScreen.SetActive(true);
-        GameModeSelectionScreen.SetActive(false);
+        if (connectionStatus != null) connectionStatus.gameObject.SetActive(true);
+        if (GameOverScreen != null) GameOverScreen.SetActive(false);
+        if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(false);
+        if (ConnectScreen != null) ConnectScreen.SetActive(true);
+        if (GameModeSelectionScreen != null) GameModeSelectionScreen.SetActive(false);
     }
 
     internal void OnGameFinished(string winner)
     {
-
-        GameOverScreen.SetActive(true);
-        TeamSelectionScreen.SetActive(false);
-        ConnectScreen.SetActive(false);
-        finishText.text = string.Format("{0} won", winner);
+        if (GameOverScreen != null) GameOverScreen.SetActive(true);
+        if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(false);
+        if (ConnectScreen != null) ConnectScreen.SetActive(false);
+        if (finishText != null) finishText.text = string.Format("{0} won", winner);
     }
 
     public void OnConnect()
     {
-        networkManager.SetPlayerLevel((ChessLevel)gameLevelSelection.value);
-        networkManager.Connect();
+        if (networkManager != null)
+        {
+            networkManager.SetPlayerLevel(SelectedLevel);
+            networkManager.Connect();
+        }
+        else
+        {
+            Debug.LogError("NetworkManager is null. Cannot connect.");
+        }
     }
 
     public void SetConnectionStatusText(string status)
     {
-        connectionStatus.text = status;
+        if (connectionStatus != null)
+        {
+            connectionStatus.text = status;
+        }
     }
 
     internal void ShowTeamSelectionScreen()
     {
-        GameOverScreen.SetActive(false);
-        TeamSelectionScreen.SetActive(true);
-        ConnectScreen.SetActive(false);
+        if (GameOverScreen != null) GameOverScreen.SetActive(false);
+        if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(true);
+        if (ConnectScreen != null) ConnectScreen.SetActive(false);
     }
 
     public void OnGameStarted()
     {
-        GameOverScreen.SetActive(false);
-        TeamSelectionScreen.SetActive(false);
-        ConnectScreen.SetActive(false);
-        connectionStatus.gameObject.SetActive(false);
-        GameModeSelectionScreen.SetActive(false);
+        if (GameOverScreen != null) GameOverScreen.SetActive(false);
+        if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(false);
+        if (ConnectScreen != null) ConnectScreen.SetActive(false);
+        if (connectionStatus != null) connectionStatus.gameObject.SetActive(false);
+        if (GameModeSelectionScreen != null) GameModeSelectionScreen.SetActive(false);
         if (PauseMenuScreen != null)
         {
             PauseMenuScreen.SetActive(false);
@@ -151,13 +180,23 @@ public class ChessUIManager : MonoBehaviour
 
     public void SelectTeam(int team)
     {
-        networkManager.SetPlayerTeam(team);
+        if (networkManager != null)
+        {
+            networkManager.SetPlayerTeam(team);
+        }
+        else
+        {
+            Debug.LogError("NetworkManager is null. Cannot select team.");
+        }
     }
 
     internal void RestrictTeamChoice(TeamColor occpiedTeam)
     {
         Button buttonToDeactivate = occpiedTeam == TeamColor.White ? whiteTeamButtonButton : blackTeamButtonButton;
-        buttonToDeactivate.interactable = false;
+        if (buttonToDeactivate != null)
+        {
+            buttonToDeactivate.interactable = false;
+        }
     }
 
     public void SetActiveController(ChessGameController controller)
@@ -195,18 +234,27 @@ public class ChessUIManager : MonoBehaviour
         Time.timeScale = 1f;
         TogglePauseMenu(false);
 
-        if (activeController != null)
+        // If we are in a gameplay scene (not MainMenu), load MainMenu scene
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "MainMenu")
         {
-            Board board = FindObjectOfType<Board>();
-            if (board != null)
+            UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+        }
+        else
+        {
+            // Fallback for single-scene setup: clean up and show the mode selector UI
+            if (activeController != null)
             {
-                Destroy(board.gameObject);
+                Board board = FindObjectOfType<Board>();
+                if (board != null)
+                {
+                    Destroy(board.gameObject);
+                }
+
+                Destroy(activeController.gameObject);
+                activeController = null;
             }
 
-            Destroy(activeController.gameObject);
-            activeController = null;
+            OnGameLaunched();
         }
-
-        OnGameLaunched();
     }
 }

@@ -8,6 +8,14 @@ using UnityEngine;
 
 public class SingleplayerChessGameController : ChessGameController
 {
+    private TeamColor localPlayerTeam = TeamColor.White;
+
+    public void SetLocalPlayerTeam(TeamColor team)
+    {
+        localPlayerTeam = team;
+        Debug.Log($"[SingleplayerChessGameController] Local player team set to: {localPlayerTeam}");
+    }
+
     protected override void SetGameState(GameState state)
     {
         this.state = state;
@@ -16,6 +24,12 @@ public class SingleplayerChessGameController : ChessGameController
     public override void TryToStartThisGame()
     {
         SetGameState(GameState.Play);
+
+        // If the player is Black, the AI is White. Since White goes first, trigger AI move immediately.
+        if (localPlayerTeam == TeamColor.Black)
+        {
+            StartCoroutine(MakeStockfishMoveCoroutine());
+        }
     }
 
     public override bool CanPerformMove()
@@ -24,7 +38,7 @@ public class SingleplayerChessGameController : ChessGameController
             return false;
         
         // Prevent player moves during AI's turn
-        if (activePlayer == blackPlayer)
+        if (activePlayer.team != localPlayerTeam)
             return false;
 
         return true;
@@ -34,8 +48,8 @@ public class SingleplayerChessGameController : ChessGameController
     {
         base.ChangeActiveTeam();
 
-        // If it's now Black's turn (AI), trigger move calculation
-        if (activePlayer == blackPlayer && state == GameState.Play)
+        // Trigger AI move calculation when it is not the local player's turn
+        if (activePlayer.team != localPlayerTeam && state == GameState.Play)
         {
             StartCoroutine(MakeStockfishMoveCoroutine());
         }
@@ -70,8 +84,8 @@ public class SingleplayerChessGameController : ChessGameController
             yield return null;
         }
 
-        // 5. Verify game state is still valid and it remains AI's turn (handles Pause/Quit/Restart during calculation)
-        if (state != GameState.Play || activePlayer != blackPlayer)
+        // 5. Verify game state is still valid and it remains AI's turn
+        if (state != GameState.Play || activePlayer.team == localPlayerTeam)
         {
             yield break;
         }
@@ -95,7 +109,8 @@ public class SingleplayerChessGameController : ChessGameController
                     Vector2Int toCoords = new Vector2Int(toX, toY);
 
                     Piece piece = board.GetPieceOnSquare(fromCoords);
-                    if (piece != null && piece.team == blackPlayer.team)
+                    ChessPlayer aiPlayer = localPlayerTeam == TeamColor.White ? blackPlayer : whitePlayer;
+                    if (piece != null && piece.team == aiPlayer.team)
                     {
                         piece.SelectAvaliableSquares();
                         if (piece.CanMoveTo(toCoords))
@@ -122,7 +137,7 @@ public class SingleplayerChessGameController : ChessGameController
         yield return new WaitForSeconds(0.4f);
 
         // Confirm state remains valid before final move execution
-        if (state == GameState.Play && activePlayer == blackPlayer)
+        if (state == GameState.Play && activePlayer.team != localPlayerTeam)
         {
             board.SelectedPieceMoved(new Vector2(targetCoords.x, targetCoords.y));
         }
@@ -133,7 +148,8 @@ public class SingleplayerChessGameController : ChessGameController
         Debug.LogWarning("[AI] Stockfish failed or returned invalid move. Executing fallback random move.");
 
         List<KeyValuePair<Piece, Vector2Int>> allMoves = new List<KeyValuePair<Piece, Vector2Int>>();
-        foreach (var piece in blackPlayer.activePieces)
+        ChessPlayer aiPlayer = localPlayerTeam == TeamColor.White ? blackPlayer : whitePlayer;
+        foreach (var piece in aiPlayer.activePieces)
         {
             if (board.HasPiece(piece))
             {

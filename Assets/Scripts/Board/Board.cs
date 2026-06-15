@@ -19,8 +19,15 @@ public abstract class Board : MonoBehaviour
 
     protected virtual void Awake()
     {
-        squareSelector = GetComponent<SquareSelectorCreator>();
-        CreateGrid();
+        EnsureInitialized();
+    }
+
+    private void EnsureInitialized()
+    {
+        if (squareSelector == null)
+            squareSelector = GetComponent<SquareSelectorCreator>();
+        if (grid == null)
+            CreateGrid();
     }
 
     public void SetDependencies(ChessGameController chessController)
@@ -125,6 +132,7 @@ public abstract class Board : MonoBehaviour
 
     private void ShowSelectionSquares(List<Vector2Int> selection)
     {
+        EnsureInitialized();
         Dictionary<Vector3, bool> squaresData = new Dictionary<Vector3, bool>();
         for (int i = 0; i < selection.Count; i++)
         {
@@ -137,6 +145,7 @@ public abstract class Board : MonoBehaviour
 
     private void DeselectPiece()
     {
+        EnsureInitialized();
         selectedPiece = null;
         squareSelector.ClearSelection();
     }
@@ -150,12 +159,14 @@ public abstract class Board : MonoBehaviour
 
     public void UpdateBoardOnPieceMove(Vector2Int newCoords, Vector2Int oldCoords, Piece newPiece, Piece oldPiece)
     {
+        EnsureInitialized();
         grid[oldCoords.x, oldCoords.y] = oldPiece;
         grid[newCoords.x, newCoords.y] = newPiece;
     }
 
     public Piece GetPieceOnSquare(Vector2Int coords)
     {
+        EnsureInitialized();
         if (CheckIfCoordinatesAreOnBoard(coords))
             return grid[coords.x, coords.y];
         return null;
@@ -170,6 +181,7 @@ public abstract class Board : MonoBehaviour
 
     public bool HasPiece(Piece piece)
     {
+        EnsureInitialized();
         for (int i = 0; i < BOARD_SIZE; i++)
         {
             for (int j = 0; j < BOARD_SIZE; j++)
@@ -184,6 +196,7 @@ public abstract class Board : MonoBehaviour
 
     public void SetPieceOnBoard(Vector2Int coords, Piece piece)
     {
+        EnsureInitialized();
         if (CheckIfCoordinatesAreOnBoard(coords))
             grid[coords.x, coords.y] = piece;
     }
@@ -207,6 +220,7 @@ public abstract class Board : MonoBehaviour
                 Debug.Log("King captured!");
             }
 
+            EnsureInitialized();
             grid[piece.occupiedSquare.x, piece.occupiedSquare.y] = null;
             chessController.OnPieceRemoved(piece);
             Destroy(piece.gameObject);
