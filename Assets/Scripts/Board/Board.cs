@@ -212,19 +212,23 @@ public abstract class Board : MonoBehaviour
 
     private void TakePiece(Piece piece)
     {
-        if (piece)
-        {
-            // Nếu ăn được vua
-            if (piece is King)
-            {
-                Debug.Log("King captured!");
-            }
+        if (piece == null)
+            return;
 
-            EnsureInitialized();
-            grid[piece.occupiedSquare.x, piece.occupiedSquare.y] = null;
-            chessController.OnPieceRemoved(piece);
-            Destroy(piece.gameObject);
+        if (piece is King)
+        {
+            Debug.Log("YOU WIN");
+
+            if (WinUI.Instance != null)
+            {
+                WinUI.Instance.ShowWin();
+            }
         }
+
+        EnsureInitialized();
+        grid[piece.occupiedSquare.x, piece.occupiedSquare.y] = null;
+        chessController.OnPieceRemoved(piece);
+        Destroy(piece.gameObject);
     }
 
 

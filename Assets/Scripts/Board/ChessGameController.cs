@@ -202,6 +202,11 @@ public abstract class ChessGameController : MonoBehaviour
 
         if (piece is King)
         {
+            Debug.Log("================================");
+            Debug.Log("KING CAPTURED");
+            Debug.Log("YOU WIN");
+            Debug.Log("================================");
+
             EndGame();
         }
     }

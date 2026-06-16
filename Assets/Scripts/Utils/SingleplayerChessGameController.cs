@@ -98,6 +98,7 @@ public class SingleplayerChessGameController : ChessGameController
             if (parts.Length >= 2 && parts[0] == "bestmove")
             {
                 string move = parts[1];
+                Debug.Log("[STOCKFISH] Best move = " + move);
                 if (move.Length >= 4)
                 {
                     int fromX = move[0] - 'a';
@@ -113,6 +114,9 @@ public class SingleplayerChessGameController : ChessGameController
                     if (piece != null && piece.team == aiPlayer.team)
                     {
                         piece.SelectAvaliableSquares();
+                        Debug.Log("[AI] Piece = " + piece.name);
+                        Debug.Log("[AI] Target = " + toCoords);
+                        Debug.Log("[AI] CanMoveTo = " + piece.CanMoveTo(toCoords));
                         if (piece.CanMoveTo(toCoords))
                         {
                             StartCoroutine(ExecuteAIMoveCoroutine(piece, toCoords));
@@ -126,6 +130,8 @@ public class SingleplayerChessGameController : ChessGameController
         // 7. Fallback to a random move if Stockfish failed or returned an invalid move
         if (!moveExecuted)
         {
+            Debug.LogError(
+                "[AI] Stockfish move rejected by game logic. Falling back.");
             MakeFallbackMove();
         }
     }
