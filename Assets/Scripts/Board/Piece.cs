@@ -65,6 +65,7 @@ public abstract class Piece : MonoBehaviour
         occupiedSquare = coords;
         this.board = board;
         transform.position = board.CalculatePositionFromCoords(coords);
+        transform.rotation = board.transform.rotation;
     }
 
     public bool IsAttackingPieceOfType<T>() where T : Piece

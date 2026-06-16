@@ -42,7 +42,17 @@ public abstract class Board : MonoBehaviour
 
     public Vector3 CalculatePositionFromCoords(Vector2Int coords)
     {
-        return bottomLeftSquareTransform.position + new Vector3(coords.x * squareSize, 0f, coords.y * squareSize);
+        return bottomLeftSquareTransform.position
+            + bottomLeftSquareTransform.right * coords.x * squareSize
+            + bottomLeftSquareTransform.forward * coords.y * squareSize;
+    }
+
+    public Vector3 GetBoardCenter()
+    {
+        float centerOffset = (BOARD_SIZE - 1) * 0.5f * squareSize;
+        return bottomLeftSquareTransform.position
+            + bottomLeftSquareTransform.right * centerOffset
+            + bottomLeftSquareTransform.forward * centerOffset;
     }
 
     internal void OnSetSelectedPiece(Vector2Int coords)
