@@ -123,7 +123,7 @@ public abstract class Board : MonoBehaviour
     private void SelectPiece(Vector2Int coords)
     {
         Piece piece = GetPieceOnSquare(coords);
-        //chessController.RemoveMovesEnablingAttakOnPieceOfType<King>(piece);
+        
         SetSelectedPiece(coords);
         List<Vector2Int> selection = selectedPiece.avaliableMoves;
         ShowSelectionSquares(selection);
