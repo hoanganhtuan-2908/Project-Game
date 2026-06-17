@@ -164,10 +164,12 @@ public abstract class ChessGameController : MonoBehaviour
 
     private void EndGame()
     {
+        Debug.Log("END GAME CALLED");
+
         SetGameState(GameState.Finished);
+
         UIManager.OnGameFinished(activePlayer.team.ToString());
     }
-
     public void RestartGame()
     {
         DestroyPieces();

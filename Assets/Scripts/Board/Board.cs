@@ -217,11 +217,23 @@ public abstract class Board : MonoBehaviour
 
         if (piece is King)
         {
-            Debug.Log("YOU WIN");
-
-            if (WinUI.Instance != null)
+            if (piece.team == TeamColor.Black)
             {
-                WinUI.Instance.ShowWin();
+                Debug.Log("YOU WIN");
+
+                if (WinUI.Instance != null)
+                {
+                    WinUI.Instance.ShowWin();
+                }
+
+                Time.timeScale = 0f;
+            }
+            else
+            {
+                Debug.Log("YOU LOSE");
+
+                if (LossUI.Instance != null)
+                    LossUI.Instance.ShowLoss();
             }
         }
 
