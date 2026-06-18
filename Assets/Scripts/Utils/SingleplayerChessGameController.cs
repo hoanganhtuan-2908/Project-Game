@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,9 +17,14 @@ public class SingleplayerChessGameController : ChessGameController
         Debug.Log($"[SingleplayerChessGameController] Local player team set to: {localPlayerTeam}");
     }
 
-    protected override void SetGameState(GameState state)
+    
+protected override void SetGameState(GameState state)
     {
+        Debug.Log("SET STATE => " + state);
+
         this.state = state;
+
+        Debug.Log(Environment.StackTrace);
     }
 
     public override void TryToStartThisGame()
@@ -34,6 +40,8 @@ public class SingleplayerChessGameController : ChessGameController
 
     public override bool CanPerformMove()
     {
+        Debug.Log(
+        $"State={state} Active={activePlayer.team} Local={localPlayerTeam}");
         if (!IsGameInProgress())
             return false;
         
@@ -69,20 +77,22 @@ public class SingleplayerChessGameController : ChessGameController
         }
 
         // 3. Run Stockfish asynchronously in background thread
-        bool isDone = false;
-        string bestMoveString = "";
+        Task<string> task =
+            Task.Run(() => GetBestMoveFromStockfish(fen, level));
 
-        Task.Run(() =>
-        {
-            bestMoveString = GetBestMoveFromStockfish(fen, level);
-            isDone = true;
-        });
-
-        // 4. Yield control back to Unity until thread finishes (keeps UI active and smooth)
-        while (!isDone)
+        while (!task.IsCompleted)
         {
             yield return null;
         }
+
+        if (task.IsFaulted)
+        {
+            Debug.LogError(task.Exception);
+            yield break;
+        }
+
+        string bestMoveString = task.Result;
+        Debug.Log("RAW STOCKFISH = " + bestMoveString);
 
         // 5. Verify game state is still valid and it remains AI's turn
         if (state != GameState.Play || activePlayer.team == localPlayerTeam)
@@ -98,6 +108,24 @@ public class SingleplayerChessGameController : ChessGameController
             if (parts.Length >= 2 && parts[0] == "bestmove")
             {
                 string move = parts[1];
+                if (move == "(none)")
+                {
+                    Debug.Log("CHECKMATE");
+
+                    if (LossUI.Instance != null)
+                    {
+                        Debug.Log("SHOW LOSS UI");
+                        LossUI.Instance.ShowLoss();
+                    }
+                    else
+                    {
+                        Debug.LogError("LossUI.Instance is NULL");
+                    }
+
+                    SetGameState(GameState.Finished);
+
+                    yield break;
+                }
                 if (move.Length >= 4)
                 {
                     int fromX = move[0] - 'a';
@@ -113,6 +141,9 @@ public class SingleplayerChessGameController : ChessGameController
                     if (piece != null && piece.team == aiPlayer.team)
                     {
                         piece.SelectAvaliableSquares();
+                        Debug.Log("[AI] Piece = " + piece.name);
+                        Debug.Log("[AI] Target = " + toCoords);
+                        Debug.Log("[AI] CanMoveTo = " + piece.CanMoveTo(toCoords));
                         if (piece.CanMoveTo(toCoords))
                         {
                             StartCoroutine(ExecuteAIMoveCoroutine(piece, toCoords));
@@ -126,7 +157,21 @@ public class SingleplayerChessGameController : ChessGameController
         // 7. Fallback to a random move if Stockfish failed or returned an invalid move
         if (!moveExecuted)
         {
-            MakeFallbackMove();
+            Debug.LogWarning("[AI] No legal move.");
+
+            if (LossUI.Instance != null)
+            {
+                Debug.Log("SHOW LOSS UI - NO LEGAL MOVE");
+                LossUI.Instance.ShowLoss();
+            }
+            else
+            {
+                Debug.LogError("LossUI.Instance is NULL");
+            }
+
+            SetGameState(GameState.Finished);
+
+            yield break;
         }
     }
 
@@ -175,85 +220,130 @@ public class SingleplayerChessGameController : ChessGameController
 
     private string GetBestMoveFromStockfish(string fen, ChessLevel level)
     {
-        string bestMove = "";
         try
         {
-            string exePath = Path.Combine(Application.dataPath, "AIChessModel/stockfish/stockfish-windows-x86-64-avx2.exe");
+            string exePath = Path.Combine(
+                Application.dataPath,
+                "AIChessModel/stockfish/stockfish-windows-x86-64-avx2.exe"
+            );
+
             exePath = exePath.Replace('/', '\\');
 
             if (!File.Exists(exePath))
             {
-                Debug.LogError($"[Stockfish] Executable not found at path: {exePath}");
+                Debug.LogError($"Stockfish not found: {exePath}");
                 return "";
             }
 
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo
+            using (var process = new System.Diagnostics.Process())
             {
-                FileName = exePath,
-                UseShellExecute = false,
-                RedirectStandardInput = true,
-                RedirectStandardOutput = true,
-                CreateNoWindow = true
-            };
+                process.StartInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = exePath,
+                    UseShellExecute = false,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
 
-            using (System.Diagnostics.Process process = new System.Diagnostics.Process { StartInfo = startInfo })
-            {
                 process.Start();
 
-                int skillLevel = 10;
-                int movetime = 500;
+                Debug.Log($"[Stockfish] PID = {process.Id}");
+
+                if (process.HasExited)
+                {
+                    Debug.LogError(
+                        $"Stockfish exited immediately. ExitCode={process.ExitCode}"
+                    );
+
+                    return "";
+                }
+
+                int skillLevel = 8;
+                int moveTime = 400;
 
                 switch (level)
                 {
                     case ChessLevel.Beginner:
                         skillLevel = 0;
-                        movetime = 100;
+                        moveTime = 100;
                         break;
+
                     case ChessLevel.Regular:
                         skillLevel = 8;
-                        movetime = 400;
+                        moveTime = 400;
                         break;
+
                     case ChessLevel.Pro:
                         skillLevel = 20;
-                        movetime = 1000;
+                        moveTime = 1000;
                         break;
                 }
 
                 process.StandardInput.WriteLine("uci");
                 process.StandardInput.WriteLine("isready");
+                process.StandardInput.Flush();
 
                 string line;
+                DateTime timeout = DateTime.Now.AddSeconds(5);
+
                 while ((line = process.StandardOutput.ReadLine()) != null)
                 {
-                    if (line == "readyok")
+                    if (line.Contains("readyok"))
                         break;
+
+                    if (DateTime.Now > timeout)
+                    {
+                        Debug.LogError("Stockfish ready timeout");
+                        process.Kill();
+                        return "";
+                    }
                 }
 
                 process.StandardInput.WriteLine($"setoption name Skill Level value {skillLevel}");
                 process.StandardInput.WriteLine($"position fen {fen}");
-                process.StandardInput.WriteLine($"go movetime {movetime}");
+                process.StandardInput.WriteLine($"go movetime {moveTime}");
                 process.StandardInput.Flush();
+
+                timeout = DateTime.Now.AddSeconds(10);
 
                 while ((line = process.StandardOutput.ReadLine()) != null)
                 {
                     if (line.StartsWith("bestmove"))
                     {
-                        bestMove = line;
-                        break;
+                        process.StandardInput.WriteLine("quit");
+                        process.StandardInput.Flush();
+
+                        process.WaitForExit(1000);
+
+                        return line;
+                    }
+
+                    if (DateTime.Now > timeout)
+                    {
+                        Debug.LogError("Stockfish move timeout");
+                        process.Kill();
+                        return "";
                     }
                 }
 
-                process.StandardInput.WriteLine("quit");
+                string error = process.StandardError.ReadToEnd();
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Debug.LogError(error);
+                }
+
+                return "";
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Debug.LogError($"[Stockfish] Exception while running process: {e.Message}");
+            Debug.LogError(ex);
+            return "";
         }
-
-        return bestMove;
     }
-
     private string GenerateFEN()
     {
         System.Text.StringBuilder fen = new System.Text.StringBuilder();
@@ -342,5 +432,10 @@ public class SingleplayerChessGameController : ChessGameController
             c = char.ToUpper(c);
 
         return c;
+    }
+
+    public override bool IsLocalPlayerWinner(string winnerTeam)
+    {
+        return winnerTeam == localPlayerTeam.ToString();
     }
 }

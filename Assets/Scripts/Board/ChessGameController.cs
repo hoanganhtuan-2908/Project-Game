@@ -64,6 +64,7 @@ public abstract class ChessGameController : MonoBehaviour
     protected abstract void SetGameState(GameState state);
     public abstract void TryToStartThisGame();
     public abstract bool CanPerformMove();
+    public abstract bool IsLocalPlayerWinner(String winnerTeam);
 
     internal bool IsGameInProgress()
     {
@@ -164,10 +165,12 @@ public abstract class ChessGameController : MonoBehaviour
 
     private void EndGame()
     {
+        Debug.Log("END GAME CALLED");
+
         SetGameState(GameState.Finished);
+
         UIManager.OnGameFinished(activePlayer.team.ToString());
     }
-
     public void RestartGame()
     {
         DestroyPieces();
@@ -202,6 +205,11 @@ public abstract class ChessGameController : MonoBehaviour
 
         if (piece is King)
         {
+            Debug.Log("================================");
+            Debug.Log("KING CAPTURED");
+            Debug.Log("YOU WIN");
+            Debug.Log("================================");
+
             EndGame();
         }
     }

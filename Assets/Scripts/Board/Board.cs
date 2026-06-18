@@ -133,7 +133,7 @@ public abstract class Board : MonoBehaviour
     private void SelectPiece(Vector2Int coords)
     {
         Piece piece = GetPieceOnSquare(coords);
-        //chessController.RemoveMovesEnablingAttakOnPieceOfType<King>(piece);
+        
         SetSelectedPiece(coords);
         List<Vector2Int> selection = selectedPiece.avaliableMoves;
         ShowSelectionSquares(selection);
@@ -222,19 +222,35 @@ public abstract class Board : MonoBehaviour
 
     private void TakePiece(Piece piece)
     {
-        if (piece)
-        {
-            // Nếu ăn được vua
-            if (piece is King)
-            {
-                Debug.Log("King captured!");
-            }
+        if (piece == null)
+            return;
 
-            EnsureInitialized();
-            grid[piece.occupiedSquare.x, piece.occupiedSquare.y] = null;
-            chessController.OnPieceRemoved(piece);
-            Destroy(piece.gameObject);
+        if (piece is King)
+        {
+            if (piece.team == TeamColor.Black)
+            {
+                Debug.Log("YOU WIN");
+
+                if (WinUI.Instance != null)
+                {
+                    WinUI.Instance.ShowWin();
+                }
+
+                Time.timeScale = 0f;
+            }
+            else
+            {
+                Debug.Log("YOU LOSE");
+
+                if (LossUI.Instance != null)
+                    LossUI.Instance.ShowLoss();
+            }
         }
+
+        EnsureInitialized();
+        grid[piece.occupiedSquare.x, piece.occupiedSquare.y] = null;
+        chessController.OnPieceRemoved(piece);
+        Destroy(piece.gameObject);
     }
 
 

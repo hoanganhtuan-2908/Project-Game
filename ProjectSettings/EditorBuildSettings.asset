@@ -9,7 +9,13 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/Board.unity
-    guid: e4403fa48ff17824a8d5b9e46a22bc5c
+    path: Assets/Scenes/MainMenu.unity
+    guid: cc0e6d16c88cb2d49b8f7073da63c81c
+  - enabled: 1
+    path: Assets/Scenes/MultiplayerPlayerLobbySence.unity
+    guid: 21b78283000f1324cba774d95f146810
+  - enabled: 1
+    path: Assets/Scenes/SinglePlayer.unity
+    guid: e2e67c7b5a76f7e429243978718c3255
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
