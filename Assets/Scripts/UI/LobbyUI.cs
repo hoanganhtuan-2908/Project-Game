@@ -13,6 +13,7 @@ public class LobbyUI : MonoBehaviourPunCallbacks
     [SerializeField] private Button createLobbyButton;
     [SerializeField] private Button quickJoinButton;
     [SerializeField] private Button joinWithCodeButton;
+    [SerializeField] private Button joinLobbyButton; // Big Join button under the list
 
     [Header("UI Inputs")]
     [SerializeField] private TMP_InputField playerNameInput;
@@ -23,11 +24,12 @@ public class LobbyUI : MonoBehaviourPunCallbacks
 
     [Header("Room List View")]
     [SerializeField] private Transform content;
-    [SerializeField] private LobbyListUI lobbyItemPrefab;
+    [SerializeField] private LobbyDetail lobbyItemPrefab; // Changed from LobbyListUI to LobbyDetail
     [SerializeField] private TMP_Text statusText;
 
     private Dictionary<string, RoomInfo> roomCache = new Dictionary<string, RoomInfo>();
     private List<GameObject> roomListGameObjects = new List<GameObject>();
+    private LobbyDetail selectedLobbyDetail;
 
     private const string PLAYER_NAME_PREF_KEY = "LobbyPlayerName";
 
@@ -52,6 +54,12 @@ public class LobbyUI : MonoBehaviourPunCallbacks
         if (createLobbyButton != null) createLobbyButton.onClick.AddListener(ShowCreateLobbyPanel);
         if (joinWithCodeButton != null) joinWithCodeButton.onClick.AddListener(ShowJoinRoomPanel);
         if (quickJoinButton != null) quickJoinButton.onClick.AddListener(QuickJoin);
+
+        if (joinLobbyButton != null)
+        {
+            joinLobbyButton.onClick.AddListener(JoinSelectedRoom);
+            joinLobbyButton.interactable = false;
+        }
 
         // Hide sub-panels by default
         if (createLobbyPanel != null) createLobbyPanel.gameObject.SetActive(false);
@@ -199,19 +207,54 @@ public class LobbyUI : MonoBehaviourPunCallbacks
         }
     }
 
+    private void SelectLobby(LobbyDetail lobbyDetail)
+    {
+        if (selectedLobbyDetail != null)
+        {
+            selectedLobbyDetail.SetSelected(false);
+        }
+
+        selectedLobbyDetail = lobbyDetail;
+
+        if (selectedLobbyDetail != null)
+        {
+            selectedLobbyDetail.SetSelected(true);
+            if (joinLobbyButton != null)
+            {
+                joinLobbyButton.interactable = true;
+            }
+        }
+        else
+        {
+            if (joinLobbyButton != null)
+            {
+                joinLobbyButton.interactable = false;
+            }
+        }
+    }
+
+    private void JoinSelectedRoom()
+    {
+        if (selectedLobbyDetail != null)
+        {
+            JoinRoomByName(selectedLobbyDetail.RoomName);
+        }
+    }
+
     private void UpdateRoomListView()
     {
         ClearRoomListView();
+        SelectLobby(null); // Clear selection when recreating list
 
         if (content == null || lobbyItemPrefab == null) return;
 
         foreach (var roomEntry in roomCache)
         {
             RoomInfo room = roomEntry.Value;
-            LobbyListUI item = Instantiate(lobbyItemPrefab, content);
+            LobbyDetail item = Instantiate(lobbyItemPrefab, content);
             if (item != null)
             {
-                item.Setup(room, JoinRoomByName);
+                item.Setup(room, SelectLobby);
                 roomListGameObjects.Add(item.gameObject);
             }
         }
