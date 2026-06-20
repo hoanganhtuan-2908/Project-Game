@@ -14,4 +14,13 @@ public class GameSetupUI : MonoBehaviour
     [SerializeField] private Button startGameButton;
     [SerializeField] private Button backToLobbyButton;
 
+    public TextMeshProUGUI PlayerName1 => playerName1;
+    public TextMeshProUGUI PlayerName2 => playerName2;
+    public TextMeshProUGUI RoomName => roomName;
+    public TextMeshProUGUI RoomID => roomID;
+    public TMP_Dropdown ChooseBlackOrWhiteDropdown1 => chooseBlackOrWhiteDropdown1;
+    public TMP_Dropdown ChooseBlackOrWhiteDropdown2 => chooseBlackOrWhiteDropdown2;
+    public TMP_Dropdown ChooseSkinDropdown => chooseSkinDropdown;
+    public Button StartGameButton => startGameButton;
+    public Button BackToLobbyButton => backToLobbyButton;
 }
