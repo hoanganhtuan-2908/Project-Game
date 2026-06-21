@@ -13,35 +13,29 @@ public class SingleplayerSceneInitializer : MonoBehaviour
 
     [Header("Singleplayer Setup UI")]
     [SerializeField] private GameObject setupPanel;
-    [SerializeField] private TMP_Dropdown teamSelectionDropdown; // Dropdown để chọn bên (0 = White, 1 = Black)
+    [SerializeField] private TMP_Dropdown teamSelectionDropdown;
 
     private void Start()
     {
-        // Tự động điền các tùy chọn "White" và "Black" cho Dropdown chọn bên
         if (teamSelectionDropdown != null)
         {
             teamSelectionDropdown.ClearOptions();
             var options = new System.Collections.Generic.List<string> { "White (Trắng)", "Black (Đen)" };
             teamSelectionDropdown.AddOptions(options);
-            teamSelectionDropdown.value = 0; // Mặc định chọn quân Trắng
+            teamSelectionDropdown.value = 0;
             teamSelectionDropdown.RefreshShownValue();
         }
 
-        // 1. Hiển thị bảng cài đặt và đợi người chơi chọn các thông số
         if (setupPanel != null)
         {
             setupPanel.SetActive(true);
         }
         else
         {
-            // Nếu không gán panel, tự động bắt đầu game với quân Trắng
             StartGame();
         }
     }
 
-    /// <summary>
-    /// Được gọi bởi nút "Start Game" trên bảng cài đặt
-    /// </summary>
     public void StartGame()
     {
         if (setupPanel != null)
@@ -56,7 +50,7 @@ public class SingleplayerSceneInitializer : MonoBehaviour
     {
         if (board == null)
         {
-            board = FindObjectOfType<SinglePlayerBoard>();
+            board = FindAnyObjectByType<SinglePlayerBoard>();
         }
 
         if (board == null)
@@ -67,12 +61,20 @@ public class SingleplayerSceneInitializer : MonoBehaviour
 
         if (cameraSetup == null)
         {
-            cameraSetup = FindObjectOfType<CameraSetup>();
+            cameraSetup = FindAnyObjectByType<CameraSetup>();
         }
 
         if (uiManager == null)
         {
-            uiManager = FindObjectOfType<SingleplayerUIManager>();
+            uiManager = FindAnyObjectByType<SingleplayerUIManager>();
+        }
+
+        IChessUIManager resolvedUIManager = ResolveUIManager();
+
+        if (resolvedUIManager == null)
+        {
+            Debug.LogError("[SingleplayerSceneInitializer] No UI manager implementing IChessUIManager was found in the scene!");
+            return;
         }
 
         if (singleplayerControllerPrefab == null)
@@ -81,46 +83,71 @@ public class SingleplayerSceneInitializer : MonoBehaviour
             return;
         }
 
-        // 1. Xác định phe người chơi từ Dropdown (0 = White, 1 = Black)
         TeamColor selectedTeam = TeamColor.White;
         if (teamSelectionDropdown != null)
         {
-            selectedTeam = (teamSelectionDropdown.value == 0) ? TeamColor.White : TeamColor.Black;
+            selectedTeam = teamSelectionDropdown.value == 0 ? TeamColor.White : TeamColor.Black;
         }
-        Debug.Log($"[SingleplayerSceneInitializer] Bắt đầu chơi với phe: {selectedTeam}");
+        Debug.Log($"[SingleplayerSceneInitializer] Starting game as: {selectedTeam}");
 
-        // 2. Tạo Controller cho Singleplayer
         SingleplayerChessGameController controller = Instantiate(singleplayerControllerPrefab);
 
-        // 3. Thiết lập phe của người chơi cho Controller
         controller.SetLocalPlayerTeam(selectedTeam);
 
-        // 4. Áp dụng skin được chọn từ UI Manager
-        if (uiManager != null && uiManager.SelectedSkin != null)
+        ChessSkin selectedSkin = GetSelectedSkin(resolvedUIManager);
+        if (selectedSkin != null)
         {
             PiecesCreator creator = controller.GetComponent<PiecesCreator>();
             if (creator != null)
             {
-                creator.SetActiveSkin(uiManager.SelectedSkin);
+                creator.SetActiveSkin(selectedSkin);
             }
         }
 
-        // 5. Thiết lập các liên kết dependency và khởi tạo game
-        controller.SetDependencies(cameraSetup, uiManager, board);
+        controller.SetDependencies(cameraSetup, resolvedUIManager, board);
         controller.InitializeGame();
 
         board.SetDependencies(controller);
+        SetActiveController(resolvedUIManager, controller);
 
+        controller.StartNewGame();
+        controller.SetupCamera(selectedTeam);
+    }
+
+    private IChessUIManager ResolveUIManager()
+    {
         if (uiManager != null)
+            return uiManager;
+
+        ChessUIManager sharedUIManager = FindAnyObjectByType<ChessUIManager>();
+        if (sharedUIManager != null)
+            return sharedUIManager;
+
+        return FindAnyObjectByType<SingleplayerUIManager>();
+    }
+
+    private ChessSkin GetSelectedSkin(IChessUIManager resolvedUIManager)
+    {
+        if (resolvedUIManager is SingleplayerUIManager singleplayerUIManager)
+            return singleplayerUIManager.SelectedSkin;
+
+        if (resolvedUIManager is ChessUIManager sharedUIManager)
+            return sharedUIManager.SelectedSkin;
+
+        return null;
+    }
+
+    private void SetActiveController(IChessUIManager resolvedUIManager, ChessGameController controller)
+    {
+        if (resolvedUIManager is SingleplayerUIManager singleplayerUIManager)
         {
-            uiManager.SetActiveController(controller);
-            uiManager.OnGameStarted(); // Chuyển giao diện sang trạng thái đang chơi
+            singleplayerUIManager.SetActiveController(controller);
+            return;
         }
 
-        // 6. Bắt đầu trận đấu
-        controller.StartNewGame();
-
-        // 7. Thiết lập Camera xoay về hướng của phe người chơi chọn
-        controller.SetupCamera(selectedTeam);
+        if (resolvedUIManager is ChessUIManager sharedUIManager)
+        {
+            sharedUIManager.SetActiveController(controller);
+        }
     }
 }

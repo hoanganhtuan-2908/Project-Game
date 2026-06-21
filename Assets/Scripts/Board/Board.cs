@@ -227,7 +227,10 @@ public abstract class Board : MonoBehaviour
 
         if (piece is King)
         {
-            if (piece.team == TeamColor.Black)
+            TeamColor winnerTeam = piece.team == TeamColor.White ? TeamColor.Black : TeamColor.White;
+            bool localPlayerWon = chessController != null && chessController.IsLocalPlayerWinner(winnerTeam.ToString());
+
+            if (localPlayerWon)
             {
                 Debug.Log("YOU WIN");
 
@@ -243,7 +246,11 @@ public abstract class Board : MonoBehaviour
                 Debug.Log("YOU LOSE");
 
                 if (LossUI.Instance != null)
+                {
                     LossUI.Instance.ShowLoss();
+                }
+
+                Time.timeScale = 0f;
             }
         }
 

@@ -114,14 +114,24 @@ public class SingleplayerUIManager : MonoBehaviour, IChessUIManager
         if (pauseMenuScreen != null) pauseMenuScreen.SetActive(false);
         if (finishText != null) finishText.text = string.Format("{0} won", winner);
 
+        bool localPlayerWon = false;
+        if (activeController != null)
+        {
+            localPlayerWon = activeController.IsLocalPlayerWinner(winner);
+        }
+
+        if (localPlayerWon)
+        {
+            if (WinUI.Instance != null) WinUI.Instance.ShowWin();
+        }
+        else
+        {
+            if (LossUI.Instance != null) LossUI.Instance.ShowLoss();
+        }
+
         // Phát nhạc thắng/thua
         if (FMODAudioManager.Instance != null)
         {
-            bool localPlayerWon = false;
-            if (activeController != null)
-            {
-                localPlayerWon = activeController.IsLocalPlayerWinner(winner);
-            }
             FMODAudioManager.Instance.PlayGameFinishedTheme(localPlayerWon);
         }
     }

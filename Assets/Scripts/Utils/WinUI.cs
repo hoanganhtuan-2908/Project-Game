@@ -26,10 +26,21 @@ public class WinUI : MonoBehaviour
         if (winPanel != null)
         {
             winPanel.SetActive(true);
+            winPanel.transform.SetAsLastSibling();
         }
+        else
+        {
+            Debug.LogError("[WinUI] winPanel is not assigned.");
+        }
+
         if (restartPanel != null)
         {
             restartPanel.SetActive(true);
+            restartPanel.transform.SetAsLastSibling();
+        }
+        else
+        {
+            Debug.LogError("[WinUI] restartPanel is not assigned.");
         }
     }
     public void HideWin()
