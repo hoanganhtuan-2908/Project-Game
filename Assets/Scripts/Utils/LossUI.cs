@@ -9,7 +9,17 @@ public class LossUI : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        bool isAttachedToOwnPanel = lossPanel == gameObject;
+
+        if (!isAttachedToOwnPanel || Instance == null)
+        {
+            Instance = this;
+        }
+
+        if (isAttachedToOwnPanel)
+        {
+            return;
+        }
 
         if (lossPanel != null)
             lossPanel.SetActive(false);
@@ -20,13 +30,27 @@ public class LossUI : MonoBehaviour
 
     public void ShowLoss()
     {
-        Debug.Log("YOU LOSS");
+        Debug.Log("YOU LOSE");
 
         if (lossPanel != null)
+        {
             lossPanel.SetActive(true);
+            lossPanel.transform.SetAsLastSibling();
+        }
+        else
+        {
+            Debug.LogError("[LossUI] lossPanel is not assigned.");
+        }
 
         if (restartPanel != null)
+        {
             restartPanel.SetActive(true);
+            restartPanel.transform.SetAsLastSibling();
+        }
+        else
+        {
+            Debug.LogError("[LossUI] restartPanel is not assigned.");
+        }
     }
 
     public void HideLoss()

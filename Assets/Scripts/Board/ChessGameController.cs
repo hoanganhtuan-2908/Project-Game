@@ -147,9 +147,9 @@ public abstract class ChessGameController : MonoBehaviour
     {
         GenerateAllPossiblePlayerMoves(activePlayer);
         GenerateAllPossiblePlayerMoves(GetOpponentToPlayer(activePlayer));
-        if (CheckIfGameIsFinished())
+        if (TryGetGameWinner(out ChessPlayer winner))
         {
-            EndGame();
+            EndGame(winner);
         }
         else
         {
@@ -157,19 +157,39 @@ public abstract class ChessGameController : MonoBehaviour
         }
     }
 
-    private bool CheckIfGameIsFinished()
+    private bool TryGetGameWinner(out ChessPlayer winner)
     {
-       
+        winner = null;
+        ChessPlayer opponent = GetOpponentToPlayer(activePlayer);
+
+        if (IsCheckmated(opponent, activePlayer))
+        {
+            winner = activePlayer;
+            return true;
+        }
+
+        if (IsCheckmated(activePlayer, opponent))
+        {
+            winner = opponent;
+            return true;
+        }
+
         return false;
     }
 
-    private void EndGame()
+    protected bool IsCheckmated(ChessPlayer defender, ChessPlayer attacker)
+    {
+        return attacker.CheckIfIsAttackigPiece<King>()
+            && !defender.CanHidePieceFromAttack<King>(attacker);
+    }
+
+    private void EndGame(ChessPlayer winner)
     {
         Debug.Log("END GAME CALLED");
 
         SetGameState(GameState.Finished);
 
-        UIManager.OnGameFinished(activePlayer.team.ToString());
+        UIManager.OnGameFinished(winner.team.ToString());
     }
     public void RestartGame()
     {
@@ -207,10 +227,10 @@ public abstract class ChessGameController : MonoBehaviour
         {
             Debug.Log("================================");
             Debug.Log("KING CAPTURED");
-            Debug.Log("YOU WIN");
+            Debug.Log($"{GetOpponentToPlayer(pieceOwner).team} WIN");
             Debug.Log("================================");
 
-            EndGame();
+            EndGame(GetOpponentToPlayer(pieceOwner));
         }
     }
 
