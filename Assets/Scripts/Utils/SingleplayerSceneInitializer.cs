@@ -8,7 +8,7 @@ public class SingleplayerSceneInitializer : MonoBehaviour
 
     [Header("Scene References")]
     [SerializeField] private CameraSetup cameraSetup;
-    [SerializeField] private ChessUIManager uiManager;
+    [SerializeField] private SingleplayerUIManager uiManager;
     [SerializeField] private SinglePlayerBoard board;
 
     [Header("Singleplayer Setup UI")]
@@ -72,7 +72,7 @@ public class SingleplayerSceneInitializer : MonoBehaviour
 
         if (uiManager == null)
         {
-            uiManager = FindObjectOfType<ChessUIManager>();
+            uiManager = FindObjectOfType<SingleplayerUIManager>();
         }
 
         if (singleplayerControllerPrefab == null)

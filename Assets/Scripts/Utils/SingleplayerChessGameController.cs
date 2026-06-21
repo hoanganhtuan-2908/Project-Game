@@ -71,9 +71,9 @@ protected override void SetGameState(GameState state)
 
         // 2. Get current difficulty level
         ChessLevel level = ChessLevel.Regular;
-        if (UIManager != null)
+        if (UIManager is SingleplayerUIManager singleplayerUI)
         {
-            level = UIManager.SelectedLevel;
+            level = singleplayerUI.SelectedLevel;
         }
 
         // 3. Run Stockfish asynchronously in background thread

@@ -152,6 +152,7 @@ public class LobbyUI : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
+        Debug.Log($"[Lobby] OnRoomListUpdate received {roomList.Count} rooms.");
         UpdateRoomCache(roomList);
         UpdateRoomListView();
     }
@@ -196,6 +197,7 @@ public class LobbyUI : MonoBehaviourPunCallbacks
     {
         foreach (RoomInfo room in roomList)
         {
+            Debug.Log($"[Lobby] Room Info Update -> Name: {room.Name}, Players: {room.PlayerCount}/{room.MaxPlayers}, IsOpen: {room.IsOpen}, IsVisible: {room.IsVisible}, Removed: {room.RemovedFromList}");
             if (room.RemovedFromList || room.PlayerCount == 0 || !room.IsOpen)
             {
                 roomCache.Remove(room.Name);

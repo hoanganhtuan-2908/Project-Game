@@ -14,7 +14,7 @@ public abstract class ChessGameController : MonoBehaviour
     [SerializeField] private BoardLayout startingBoardLayout;
 
 
-    protected ChessUIManager UIManager;
+    protected IChessUIManager UIManager;
     private CameraSetup cameraSetup;
     protected Board board;
     private PiecesCreator pieceCreator;
@@ -30,7 +30,7 @@ public abstract class ChessGameController : MonoBehaviour
         pieceCreator = GetComponent<PiecesCreator>();
     }
 
-    internal void SetDependencies(CameraSetup cameraSetup, ChessUIManager UIManager, Board board)
+    internal void SetDependencies(CameraSetup cameraSetup, IChessUIManager UIManager, Board board)
     {
         this.cameraSetup = cameraSetup;
         this.UIManager = UIManager;

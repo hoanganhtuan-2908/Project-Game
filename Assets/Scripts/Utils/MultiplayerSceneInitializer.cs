@@ -16,24 +16,47 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
     [SerializeField] private NetworkManager networkManager;
     [SerializeField] private Transform multiplayerBoardAnchor;
     [SerializeField] private CameraSetup cameraSetup;
-    [SerializeField] private ChessUIManager uiManager;
+    [SerializeField] private MultiplayerUIManager uiManager;
     [SerializeField] private MultiplayerChessGameController multiplayerControllerPrefab;
 
     private const string TEAM_PROP_KEY = "Team";
     private const string SKIN_PROP_KEY = "Skin";
+    private const string READY_PROP_KEY = "Ready";
     private const string GAME_STARTED_ROOM_KEY = "GameStarted";
 
     private bool gameHasStarted = false;
 
-    private void Start()
+    private IEnumerator Start()
     {
         if (setupUI == null)
         {
             Debug.LogError("[MultiplayerSceneInitializer] setupUI is not assigned!");
-            return;
+            yield break;
         }
 
         setupUI.gameObject.SetActive(true);
+
+        // Setup Skin Dropdown options from GameSetupUI
+        PopulateSkinDropdown();
+
+        // Setup Dropdown option text for color choice (0 = White, 1 = Black)
+        InitializeDropdownOptions();
+
+        if (setupUI.BackToLobbyButton != null)
+        {
+            setupUI.BackToLobbyButton.onClick.AddListener(LeaveRoomAndGoToLobby);
+        }
+
+        // Wait until we are InRoom if we are connected to Photon to avoid timing issues on Guest client
+        if (PhotonNetwork.IsConnected && !PhotonNetwork.InRoom)
+        {
+            float timeout = 3f;
+            while (!PhotonNetwork.InRoom && timeout > 0)
+            {
+                timeout -= Time.deltaTime;
+                yield return null;
+            }
+        }
 
         if (!PhotonNetwork.InRoom)
         {
@@ -42,8 +65,16 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
             setupUI.RoomID.text = "OFFLINE TEST";
             setupUI.PlayerName1.text = "Local Player";
             setupUI.PlayerName2.text = "No opponent";
-            setupUI.StartGameButton.interactable = false;
-            return;
+            if (setupUI.StartGameButton != null)
+            {
+                setupUI.StartGameButton.gameObject.SetActive(true);
+                setupUI.StartGameButton.interactable = false;
+            }
+            if (setupUI.ReadyButton != null)
+            {
+                setupUI.ReadyButton.gameObject.SetActive(false);
+            }
+            yield break;
         }
 
         // Initialize Room and Player Info
@@ -56,23 +87,58 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
             PhotonNetwork.LocalPlayer.NickName = "Player_" + PhotonNetwork.LocalPlayer.ActorNumber;
         }
 
-        // Setup Skin Dropdown options from ChessUIManager
-        PopulateSkinDropdown();
+        // Set initial custom properties
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // Host defaults to White (0)
+            SetLocalPlayerProperty(TEAM_PROP_KEY, 0);
 
-        // Setup Dropdown listener for Master Client (Host) to choose color
+            // Initialize Room skin property to 0
+            ExitGames.Client.Photon.Hashtable roomProps = new ExitGames.Client.Photon.Hashtable();
+            roomProps[SKIN_PROP_KEY] = 0;
+            PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
+        }
+        else
+        {
+            // Guest defaults to not ready (false)
+            SetLocalPlayerProperty(READY_PROP_KEY, false);
+        }
+
+        // Setup Button listeners based on role
+        if (setupUI.StartGameButton != null)
+        {
+            setupUI.StartGameButton.onClick.RemoveAllListeners();
+            setupUI.StartGameButton.onClick.AddListener(RequestStartGame);
+        }
+
+        if (setupUI.ReadyButton != null)
+        {
+            setupUI.ReadyButton.onClick.RemoveAllListeners();
+            setupUI.ReadyButton.onClick.AddListener(ToggleReadyState);
+        }
+
+        // Setup dropdown interactability based on host/guest role
+        if (setupUI.ChooseBlackOrWhiteDropdown1 != null)
+        {
+            setupUI.ChooseBlackOrWhiteDropdown1.interactable = PhotonNetwork.IsMasterClient;
+        }
+
+        UpdateLobbyUI();
+    }
+
+    private void InitializeDropdownOptions()
+    {
         if (setupUI.ChooseBlackOrWhiteDropdown1 != null)
         {
             setupUI.ChooseBlackOrWhiteDropdown1.ClearOptions();
             setupUI.ChooseBlackOrWhiteDropdown1.AddOptions(new List<string> { "White (Trắng)", "Black (Đen)" });
             setupUI.ChooseBlackOrWhiteDropdown1.onValueChanged.AddListener(OnHostColorDropdownChanged);
-            setupUI.ChooseBlackOrWhiteDropdown1.interactable = PhotonNetwork.IsMasterClient;
         }
 
         if (setupUI.ChooseBlackOrWhiteDropdown2 != null)
         {
             setupUI.ChooseBlackOrWhiteDropdown2.ClearOptions();
             setupUI.ChooseBlackOrWhiteDropdown2.AddOptions(new List<string> { "White (Trắng)", "Black (Đen)" });
-            // Guest's dropdown is strictly read-only and automatically updated based on Host's choice
             setupUI.ChooseBlackOrWhiteDropdown2.interactable = false;
         }
 
@@ -80,51 +146,21 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
         {
             setupUI.ChooseSkinDropdown.onValueChanged.AddListener(OnSkinDropdownChanged);
         }
-
-        // Setup Button listeners
-        if (setupUI.StartGameButton != null)
-        {
-            setupUI.StartGameButton.onClick.AddListener(RequestStartGame);
-        }
-
-        if (setupUI.BackToLobbyButton != null)
-        {
-            setupUI.BackToLobbyButton.onClick.AddListener(LeaveRoomAndGoToLobby);
-        }
-
-        // Set initial properties
-        if (PhotonNetwork.IsMasterClient)
-        {
-            // Host defaults to White (0)
-            SetLocalPlayerProperty(TEAM_PROP_KEY, 0);
-        }
-        // Set default skin index (0)
-        SetLocalPlayerProperty(SKIN_PROP_KEY, 0);
-
-        UpdateLobbyUI();
     }
 
     private void PopulateSkinDropdown()
     {
-        if (setupUI.ChooseSkinDropdown == null || uiManager == null) return;
+        if (setupUI.ChooseSkinDropdown == null) return;
 
         setupUI.ChooseSkinDropdown.ClearOptions();
-        
-        // Find available skins (we can inspect uiManager field)
-        // Let's check ChessUIManager dropdown or list
+
         List<string> options = new List<string>();
-        // Reflection-safe or fallback
-        // The ChessUIManager has public List<ChessSkin> availableSkins or setup through dropdown
-        // Let's get the list if possible, or use standard options
-        // We know ChessUIManager.cs line 34: List<ChessSkin> availableSkins;
-        // Let's populate from there if uiManager has them
-        // If not, we fall back to generic
-        var skinDropdownInUIManager = uiManager.GetComponentInChildren<TMP_Dropdown>();
-        if (skinDropdownInUIManager != null)
+
+        if (setupUI.AvailableSkins != null && setupUI.AvailableSkins.Count > 0)
         {
-            foreach (var opt in skinDropdownInUIManager.options)
+            foreach (var skin in setupUI.AvailableSkins)
             {
-                options.Add(opt.text);
+                options.Add(string.IsNullOrEmpty(skin.skinName) ? skin.name : skin.skinName);
             }
         }
         else
@@ -152,7 +188,39 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
 
     private void OnSkinDropdownChanged(int index)
     {
-        SetLocalPlayerProperty(SKIN_PROP_KEY, index);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            ExitGames.Client.Photon.Hashtable roomProps = new ExitGames.Client.Photon.Hashtable();
+            roomProps[SKIN_PROP_KEY] = index;
+            PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
+        }
+    }
+
+    private void ToggleReadyState()
+    {
+        bool currentReady = IsLocalPlayerReady();
+        SetLocalPlayerProperty(READY_PROP_KEY, !currentReady);
+    }
+
+    private bool IsGuestReady()
+    {
+        Player guest = GetGuestPlayer();
+        if (guest == null) return false;
+
+        if (guest.CustomProperties.TryGetValue(READY_PROP_KEY, out object readyObj))
+        {
+            return (bool)readyObj;
+        }
+        return false;
+    }
+
+    private bool IsLocalPlayerReady()
+    {
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(READY_PROP_KEY, out object readyObj))
+        {
+            return (bool)readyObj;
+        }
+        return false;
     }
 
     private void UpdateLobbyUI()
@@ -185,11 +253,47 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
             setupUI.ChooseBlackOrWhiteDropdown2.RefreshShownValue();
         }
 
-        // 3. Start Button Interactability
+        // Sync Skin Dropdown from Room Custom Properties
+        int selectedSkinIndex = 0;
+        if (PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(SKIN_PROP_KEY, out object skinObj))
+        {
+            selectedSkinIndex = (int)skinObj;
+        }
+        if (setupUI.ChooseSkinDropdown != null)
+        {
+            setupUI.ChooseSkinDropdown.onValueChanged.RemoveListener(OnSkinDropdownChanged);
+            setupUI.ChooseSkinDropdown.value = selectedSkinIndex;
+            setupUI.ChooseSkinDropdown.RefreshShownValue();
+            setupUI.ChooseSkinDropdown.onValueChanged.AddListener(OnSkinDropdownChanged);
+            setupUI.ChooseSkinDropdown.interactable = PhotonNetwork.IsMasterClient;
+        }
+
+        // 3. Start Button / Ready Button Text & Interactability
+        bool isHost = PhotonNetwork.IsMasterClient;
+
         if (setupUI.StartGameButton != null)
         {
-            // Only host can start, and only when 2 players are present
-            setupUI.StartGameButton.interactable = PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount == 2;
+            setupUI.StartGameButton.gameObject.SetActive(isHost);
+            if (isHost)
+            {
+                // Host can only start if 2 players are present AND the guest is ready
+                setupUI.StartGameButton.interactable = (PhotonNetwork.CurrentRoom.PlayerCount == 2) && IsGuestReady();
+            }
+        }
+
+        if (setupUI.ReadyButton != null)
+        {
+            setupUI.ReadyButton.gameObject.SetActive(!isHost);
+            if (!isHost)
+            {
+                bool isReady = IsLocalPlayerReady();
+                TMP_Text readyText = setupUI.ReadyButton.GetComponentInChildren<TMP_Text>();
+                if (readyText != null)
+                {
+                    readyText.text = isReady ? "Unready" : "Ready";
+                }
+                setupUI.ReadyButton.interactable = true;
+            }
         }
     }
 
@@ -209,10 +313,18 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
-        Debug.Log("[Lobby] Host requested game start.");
-        ExitGames.Client.Photon.Hashtable roomProps = new ExitGames.Client.Photon.Hashtable();
-        roomProps[GAME_STARTED_ROOM_KEY] = true;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
+        // Verify again that the room is full and guest is ready
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 2 && IsGuestReady())
+        {
+            Debug.Log("[Lobby] Host requested game start.");
+            ExitGames.Client.Photon.Hashtable roomProps = new ExitGames.Client.Photon.Hashtable();
+            roomProps[GAME_STARTED_ROOM_KEY] = true;
+            PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
+        }
+        else
+        {
+            Debug.LogWarning("[Lobby] Cannot start game: Opponent is not ready or has left.");
+        }
     }
 
     private void LeaveRoomAndGoToLobby()
@@ -235,7 +347,6 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
         if (gameHasStarted)
         {
             Debug.Log("[Lobby] Game in progress was interrupted because a player left.");
-            // Handle player disconnect during game (e.g. notify game controller or end game)
             if (uiManager != null)
             {
                 uiManager.OnGameFinished(PhotonNetwork.LocalPlayer.NickName);
@@ -249,7 +360,7 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
     {
-        if (changedProps.ContainsKey(TEAM_PROP_KEY) || changedProps.ContainsKey(SKIN_PROP_KEY))
+        if (changedProps.ContainsKey(TEAM_PROP_KEY) || changedProps.ContainsKey(SKIN_PROP_KEY) || changedProps.ContainsKey(READY_PROP_KEY))
         {
             UpdateLobbyUI();
         }
@@ -263,6 +374,10 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
             {
                 StartCoroutine(StartChessGameSequence());
             }
+        }
+        if (propertiesThatChanged.ContainsKey(SKIN_PROP_KEY))
+        {
+            UpdateLobbyUI();
         }
     }
 
@@ -344,18 +459,18 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
             localTeam = hostColorIndex == 0 ? TeamColor.Black : TeamColor.White;
         }
 
-        // Apply skin choice
+        // Apply skin choice decided by the Host (stored in Room properties)
         int localSkinIndex = 0;
-        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(SKIN_PROP_KEY, out object skinObj))
+        if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(SKIN_PROP_KEY, out object skinObj))
         {
             localSkinIndex = (int)skinObj;
         }
 
         // Apply skin from dropdown choice to PiecesCreator on controller
         PiecesCreator piecesCreator = controller.GetComponent<PiecesCreator>();
-        if (piecesCreator != null && uiManager != null && uiManager.AvailableSkins != null && localSkinIndex < uiManager.AvailableSkins.Count)
+        if (piecesCreator != null && setupUI != null && setupUI.AvailableSkins != null && localSkinIndex < setupUI.AvailableSkins.Count)
         {
-            piecesCreator.SetActiveSkin(uiManager.AvailableSkins[localSkinIndex]);
+            piecesCreator.SetActiveSkin(setupUI.AvailableSkins[localSkinIndex]);
         }
 
         // Bind dependencies directly
@@ -371,10 +486,7 @@ public class MultiplayerSceneInitializer : MonoBehaviourPunCallbacks
         controller.SetupCamera(localTeam);
         controller.SetLocalPlayer(localTeam);
 
-        if (uiManager != null)
-        {
-            uiManager.OnGameStarted();
-        }
+        uiManager.OnGameStarted();
 
         controller.StartNewGame();
         Debug.Log($"[Lobby] Game started! Local Team: {localTeam}");
