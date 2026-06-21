@@ -1131,6 +1131,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 519243076}
   - {fileID: 702474705}
   - {fileID: 746646091}
   - {fileID: 18985688}
@@ -1702,13 +1703,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 472457771}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3265056, y: 0.6272114, z: -0.3265056, w: 0.6272114}
-  m_LocalPosition: {x: -3.8, y: 9, z: -1.2}
+  m_LocalRotation: {x: 0, y: -0.8870109, z: 0.46174863, w: 0}
+  m_LocalPosition: {x: 4.78, y: 9, z: 9.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 55, y: -180, z: 0}
 --- !u!114 &472457775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1798,12 +1799,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1749519135}
+  m_Father: {fileID: 306752216}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1820, y: 980}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &519243077
 MonoBehaviour:
@@ -3001,7 +3002,7 @@ MonoBehaviour:
   victoryBackground: {fileID: 203410317}
   defeatBackground: {fileID: 958150759}
   giveUpButton: {fileID: 31889935}
-  backToMainMenuButton: {fileID: 815509227}
+  backToLobbyButton: {fileID: 815509227}
   finishText: {fileID: 1347074649}
 --- !u!4 &757588159
 Transform:
@@ -5947,7 +5948,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 519243076}
   - {fileID: 31889932}
   - {fileID: 306752216}
   - {fileID: 198012298}

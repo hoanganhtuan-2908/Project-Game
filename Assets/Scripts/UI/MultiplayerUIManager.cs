@@ -5,7 +5,7 @@ using TMPro;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
 
-public class MultiplayerUIManager : MonoBehaviour, IChessUIManager
+public class MultiplayerUIManager : MonoBehaviourPunCallbacks, IChessUIManager
 {
     [Header("Screen GameObjects")]
     [SerializeField] private GameObject gameOverScreen;
@@ -14,7 +14,7 @@ public class MultiplayerUIManager : MonoBehaviour, IChessUIManager
 
     [Header("Buttons")]
     [SerializeField] private Button giveUpButton;
-    [SerializeField] private Button backToMainMenuButton;
+    [SerializeField] private Button backToLobbyButton;
 
     [Header("Texts")]
     [SerializeField] private TMP_Text finishText;
@@ -36,9 +36,9 @@ public class MultiplayerUIManager : MonoBehaviour, IChessUIManager
         {
             giveUpButton.onClick.AddListener(OnGiveUpClicked);
         }
-        if (backToMainMenuButton != null)
+        if (backToLobbyButton != null)
         {
-            backToMainMenuButton.onClick.AddListener(OnBackToMainMenuClicked);
+            backToLobbyButton.onClick.AddListener(OnBackToLobbyClicked);
         }
     }
 
@@ -98,7 +98,7 @@ public class MultiplayerUIManager : MonoBehaviour, IChessUIManager
         }
     }
 
-    public void OnBackToMainMenuClicked()
+    public void OnBackToLobbyClicked()
     {
         Time.timeScale = 1f;
         if (FMODAudioManager.Instance != null)
@@ -106,12 +106,20 @@ public class MultiplayerUIManager : MonoBehaviour, IChessUIManager
             FMODAudioManager.Instance.PlayMenuTheme();
         }
 
-        if (PhotonNetwork.IsConnected)
+        Debug.Log("[MultiplayerUI] Back to Lobby, leaving room...");
+        if (PhotonNetwork.InRoom)
         {
-            PhotonNetwork.Disconnect();
+            PhotonNetwork.LeaveRoom();
         }
-        
-        Debug.Log("[MultiplayerUI] Back to Main Menu, disconnecting from Photon...");
-        SceneManager.LoadScene("MainMenu");
+        else
+        {
+            SceneManager.LoadScene("MultiplayerPlayerLobbySence");
+        }
+    }
+
+    public override void OnLeftRoom()
+    {
+        Debug.Log("[MultiplayerUI] Left room. Loading Lobby Scene.");
+        SceneManager.LoadScene("MultiplayerPlayerLobbySence");
     }
 }
