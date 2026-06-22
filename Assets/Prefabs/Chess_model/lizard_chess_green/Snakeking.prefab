@@ -1,12 +1,72 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &3296874832814073575
+--- !u!1 &5722189844950651008
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8818509051948399607}
+  - component: {fileID: 2627253470665199746}
+  - component: {fileID: 7666687658897402294}
+  m_Layer: 0
+  m_Name: Snakeking
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8818509051948399607
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5722189844950651008}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6682056603962613393}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2627253470665199746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5722189844950651008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InstantTweener
+--- !u!114 &7666687658897402294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5722189844950651008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd19bd38f5e208b42bc8fb29fb5e48f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::King
+  materialSetter: {fileID: 0}
+  avaliableMoves: []
+--- !u!1001 &6571269079758535034
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 8818509051948399607}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: b5aa6fbe13dc216489468a25d8bcaab5, type: 3}
       propertyPath: m_LocalScale.x
@@ -70,35 +130,35 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b5aa6fbe13dc216489468a25d8bcaab5, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -5133180012030766543}
+      addedObject: {fileID: 8231552240947474919}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b5aa6fbe13dc216489468a25d8bcaab5, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1562588634389000375}
+      addedObject: {fileID: 6549472414615398589}
   m_SourcePrefab: {fileID: 100100000, guid: b5aa6fbe13dc216489468a25d8bcaab5, type: 3}
---- !u!1 &2378379856015776694 stripped
+--- !u!1 &6336775475164005419 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b5aa6fbe13dc216489468a25d8bcaab5, type: 3}
-  m_PrefabInstance: {fileID: 3296874832814073575}
+  m_PrefabInstance: {fileID: 6571269079758535034}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-5133180012030766543
+--- !u!114 &8231552240947474919
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2378379856015776694}
+  m_GameObject: {fileID: 6336775475164005419}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InstantTweener
---- !u!114 &1562588634389000375
+--- !u!114 &6549472414615398589
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2378379856015776694}
+  m_GameObject: {fileID: 6336775475164005419}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd19bd38f5e208b42bc8fb29fb5e48f4, type: 3}
@@ -106,3 +166,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::King
   materialSetter: {fileID: 0}
   avaliableMoves: []
+--- !u!4 &6682056603962613393 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b5aa6fbe13dc216489468a25d8bcaab5, type: 3}
+  m_PrefabInstance: {fileID: 6571269079758535034}
+  m_PrefabAsset: {fileID: 0}
