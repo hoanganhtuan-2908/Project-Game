@@ -1,18 +1,18 @@
-
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
 
 [RequireComponent(typeof(PiecesCreator))]
 public abstract class ChessGameController : MonoBehaviour
 {
     protected const byte SET_GAME_STATE_EVENT_CODE = 1;
 
-    [SerializeField] private BoardLayout startingBoardLayout;
+    [Header("Rules & FEN Tracking")]
+    public Vector2Int enPassantTargetSquare = new Vector2Int(-1, -1);
+    public int halfmoveClock = 0;
+    public int fullmoveNumber = 1;
 
+    [SerializeField] private BoardLayout startingBoardLayout;
+    public abstract bool IsActivePlayerLocal();
 
     protected IChessUIManager UIManager;
     private CameraSetup cameraSetup;
@@ -52,6 +52,10 @@ public abstract class ChessGameController : MonoBehaviour
 
     public void StartNewGame()
     {
+        enPassantTargetSquare = new Vector2Int(-1, -1);
+        halfmoveClock = 0;
+        fullmoveNumber = 1;
+
         UIManager.OnGameStarted();
         SetGameState(GameState.Init);
         CreatePiecesFromLayout(startingBoardLayout);
@@ -147,14 +151,16 @@ public abstract class ChessGameController : MonoBehaviour
     {
         GenerateAllPossiblePlayerMoves(activePlayer);
         GenerateAllPossiblePlayerMoves(GetOpponentToPlayer(activePlayer));
-        if (TryGetGameWinner(out ChessPlayer winner))
+        
+        // If the moving player has put the opponent in check, play the checked SFX
+        if (activePlayer.CheckIfIsAttackigPiece<King>())
         {
-            EndGame(winner);
+            if (FMODAudioManager.Instance != null)
+            {
+                FMODAudioManager.Instance.PlayChecked();
+            }
         }
-        else
-        {
-            ChangeActiveTeam();
-        }
+        ChangeActiveTeam();
     }
 
     private bool TryGetGameWinner(out ChessPlayer winner)
@@ -234,20 +240,7 @@ public abstract class ChessGameController : MonoBehaviour
         }
     }
 
-    protected virtual void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (state == GameState.Play)
-            {
-                PauseGame();
-            }
-            else if (state == GameState.Paused)
-            {
-                ResumeGame();
-            }
-        }
-    }
+
 
     public virtual void PauseGame()
     {
@@ -271,6 +264,62 @@ public abstract class ChessGameController : MonoBehaviour
             UIManager.TogglePauseMenu(false);
 
             Time.timeScale = 1f;
+        }
+    }
+
+    public bool IsSquareAttackedBy(Vector2Int square, TeamColor attackerTeam)
+    {
+        ChessPlayer attacker = (attackerTeam == TeamColor.White) ? whitePlayer : blackPlayer;
+        int pawnDirection = (attackerTeam == TeamColor.White) ? 1 : -1;
+        foreach (var piece in attacker.activePieces)
+        {
+            if (piece == null || !board.HasPiece(piece)) continue;
+            if (piece is Pawn)
+            {
+                // Pawns attack diagonally forward
+                int diffX = Mathf.Abs(square.x - piece.occupiedSquare.x);
+                int diffY = square.y - piece.occupiedSquare.y;
+                if (diffX == 1 && diffY == pawnDirection)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                // Non-pawn pieces attack if the empty square is in their available moves
+                if (piece.avaliableMoves.Contains(square))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public void RecordMove(Piece piece, Vector2Int from, Vector2Int to, bool capture)
+    {
+        // 1. En Passant Target Square
+        if (piece is Pawn && Mathf.Abs(to.y - from.y) == 2)
+        {
+            int directionY = (piece.team == TeamColor.White) ? 1 : -1;
+            enPassantTargetSquare = new Vector2Int(from.x, from.y + directionY);
+        }
+        else
+        {
+            enPassantTargetSquare = new Vector2Int(-1, -1);
+        }
+        // 2. Halfmove Clock
+        if (piece is Pawn || capture)
+        {
+            halfmoveClock = 0;
+        }
+        else
+        {
+            halfmoveClock++;
+        }
+        // 3. Fullmove Number (incremented after Black's move)
+        if (activePlayer.team == TeamColor.Black)
+        {
+            fullmoveNumber++;
         }
     }
 }

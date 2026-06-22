@@ -1,4 +1,4 @@
-﻿using Photon.Pun;
+using Photon.Pun;
 using UnityEngine;
 
 [RequireComponent(typeof(PhotonView))]
@@ -31,39 +31,43 @@ public class MultiplayerBoard : Board
 
     public override void SelectedPieceMoved(Vector2 coords)
     {
-        Debug.LogError("RPC move");
-        photonView.RPC(nameof(RPC_OnSelectedPieceMoved), RpcTarget.AllBuffered, coords);
+        Debug.Log("[Multiplayer] RPC move sent");
+        // Apply locally immediately so selectedPiece is valid for the sender
+        Vector2Int intCoords = new Vector2Int(Mathf.RoundToInt(coords.x), Mathf.RoundToInt(coords.y));
+        OnSelectedPieceMoved(intCoords);
+        // Sync to other clients only (sender already applied above)
+        photonView.RPC(nameof(RPC_OnSelectedPieceMoved), RpcTarget.Others, coords);
     }
 
     public override void SetSelectedPiece(Vector2 coords)
     {
-        Debug.LogError("RPC select");
-        photonView.RPC(nameof(RPC_SetSelectedPiece), RpcTarget.AllBuffered, coords);
+        Debug.Log("[Multiplayer] RPC select sent");
+        // Apply locally immediately so selectedPiece is valid for the sender
+        Vector2Int intCoords = new Vector2Int(Mathf.RoundToInt(coords.x), Mathf.RoundToInt(coords.y));
+        OnSetSelectedPiece(intCoords);
+        // Sync to other clients only (sender already applied above)
+        photonView.RPC(nameof(RPC_SetSelectedPiece), RpcTarget.Others, coords);
     }
 
     [PunRPC]
     private void RPC_SetSelectedPiece(Vector2 coords)
     {
-        Debug.LogError("ON RPC select");
-
+        Debug.Log("[Multiplayer] ON RPC select");
         Vector2Int intCoords = new Vector2Int(
             Mathf.RoundToInt(coords.x),
             Mathf.RoundToInt(coords.y)
         );
-
         OnSetSelectedPiece(intCoords);
     }
 
     [PunRPC]
     private void RPC_OnSelectedPieceMoved(Vector2 coords)
     {
-        Debug.LogError("ON RPC move");
-
+        Debug.Log("[Multiplayer] ON RPC move");
         Vector2Int intCoords = new Vector2Int(
             Mathf.RoundToInt(coords.x),
             Mathf.RoundToInt(coords.y)
         );
-
         OnSelectedPieceMoved(intCoords);
     }
 }
