@@ -69,14 +69,14 @@ public class FMODAudioManager : MonoBehaviour
 
     private void PlayEvent(EventReference fmodEvent)
     {
-        Debug.Log($"[FMODAudioManager] PlayEvent called. IsNull: {fmodEvent.IsNull}, Path: {fmodEvent.Path}");
+        Debug.Log($"[FMODAudioManager] PlayEvent called. IsNull: {fmodEvent.IsNull}, Path: {fmodEvent}");
         if (fmodEvent.IsNull) return;
         
         // Dừng bài hát hiện tại
         StopCurrentMusic();
 
         currentMusicInstance = RuntimeManager.CreateInstance(fmodEvent);
-        Debug.Log($"[FMODAudioManager] Created instance for: {fmodEvent.Path}");
+        Debug.Log($"[FMODAudioManager] Created instance for: {fmodEvent}");
 
         // Phát âm thanh tại vị trí của Camera chính để tránh bị nhỏ/tắt tiếng do 3D spatialization
         Transform targetTransform = Camera.main != null ? Camera.main.transform : transform;
