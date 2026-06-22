@@ -57,7 +57,7 @@ public class MainMenu : MonoBehaviour
         PlayerPrefs.SetInt("AutoStartMultiplayer", 1);
         PlayerPrefs.Save();
 
-        SceneManager.LoadScene("Multiplayer");
+        SceneManager.LoadScene("MultiplayerPlayerLobbySence");
     }
 
     public void openOption()

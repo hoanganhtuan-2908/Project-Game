@@ -71,9 +71,13 @@ protected override void SetGameState(GameState state)
 
         // 2. Get current difficulty level
         ChessLevel level = ChessLevel.Regular;
-        if (UIManager != null)
+        if (UIManager is SingleplayerUIManager singleplayerUI)
         {
-            level = UIManager.SelectedLevel;
+            level = singleplayerUI.SelectedLevel;
+        }
+        else if (UIManager is ChessUIManager sharedUI)
+        {
+            level = sharedUI.SelectedLevel;
         }
 
         // 3. Run Stockfish asynchronously in background thread
@@ -112,16 +116,7 @@ protected override void SetGameState(GameState state)
                 {
                     Debug.Log("CHECKMATE");
 
-                    if (LossUI.Instance != null)
-                    {
-                        Debug.Log("SHOW LOSS UI");
-                        LossUI.Instance.ShowLoss();
-                    }
-                    else
-                    {
-                        Debug.LogError("LossUI.Instance is NULL");
-                    }
-
+                    ShowWinnerForNoLegalMove();
                     SetGameState(GameState.Finished);
 
                     yield break;
@@ -159,20 +154,93 @@ protected override void SetGameState(GameState state)
         {
             Debug.LogWarning("[AI] No legal move.");
 
-            if (LossUI.Instance != null)
+            if (TryFinishIfLocalPlayerIsInCheck())
             {
-                Debug.Log("SHOW LOSS UI - NO LEGAL MOVE");
-                LossUI.Instance.ShowLoss();
-            }
-            else
-            {
-                Debug.LogError("LossUI.Instance is NULL");
+                yield break;
             }
 
+            if (MakeFallbackMove())
+            {
+                yield break;
+            }
+
+            ShowWinnerForNoLegalMove();
             SetGameState(GameState.Finished);
 
             yield break;
         }
+    }
+
+    private bool TryFinishIfLocalPlayerIsInCheck()
+    {
+        ChessPlayer localPlayer = localPlayerTeam == TeamColor.White ? whitePlayer : blackPlayer;
+        ChessPlayer opponent = localPlayerTeam == TeamColor.White ? blackPlayer : whitePlayer;
+
+        localPlayer.GenerateAllPossibleMoves();
+        opponent.GenerateAllPossibleMoves();
+
+        if (!opponent.CheckIfIsAttackigPiece<King>())
+        {
+            return false;
+        }
+
+        Debug.Log("[Game] Local player is in check while AI has no valid Stockfish move. Ending as loss.");
+        ShowLocalLoss();
+        SetGameState(GameState.Finished);
+        return true;
+    }
+
+    private void ShowWinnerForNoLegalMove()
+    {
+        TeamColor winnerTeam = activePlayer.team == TeamColor.White
+            ? TeamColor.Black
+            : TeamColor.White;
+
+        ShowGameResult(winnerTeam);
+    }
+
+    private void ShowGameResult(TeamColor winnerTeam)
+    {
+        bool localPlayerWon = IsLocalPlayerWinner(winnerTeam.ToString());
+
+        if (localPlayerWon)
+        {
+            ShowLocalWin();
+        }
+        else
+        {
+            ShowLocalLoss();
+        }
+    }
+
+    private void ShowLocalWin()
+    {
+        if (WinUI.Instance != null)
+        {
+            Debug.Log("SHOW WIN UI");
+            WinUI.Instance.ShowWin();
+        }
+        else
+        {
+            Debug.LogError("WinUI.Instance is NULL");
+        }
+
+        Time.timeScale = 0f;
+    }
+
+    private void ShowLocalLoss()
+    {
+        if (LossUI.Instance != null)
+        {
+            Debug.Log("SHOW LOSS UI");
+            LossUI.Instance.ShowLoss();
+        }
+        else
+        {
+            Debug.LogError("LossUI.Instance is NULL");
+        }
+
+        Time.timeScale = 0f;
     }
 
     private IEnumerator ExecuteAIMoveCoroutine(Piece piece, Vector2Int targetCoords)
@@ -188,17 +256,19 @@ protected override void SetGameState(GameState state)
         }
     }
 
-    private void MakeFallbackMove()
+    private bool MakeFallbackMove()
     {
         Debug.LogWarning("[AI] Stockfish failed or returned invalid move. Executing fallback random move.");
 
         List<KeyValuePair<Piece, Vector2Int>> allMoves = new List<KeyValuePair<Piece, Vector2Int>>();
         ChessPlayer aiPlayer = localPlayerTeam == TeamColor.White ? blackPlayer : whitePlayer;
+        ChessPlayer localPlayer = localPlayerTeam == TeamColor.White ? whitePlayer : blackPlayer;
         foreach (var piece in aiPlayer.activePieces)
         {
             if (board.HasPiece(piece))
             {
                 piece.SelectAvaliableSquares();
+                aiPlayer.RemoveMovesEnablingAttackOnPieceOfType<King>(localPlayer, piece);
                 foreach (var move in piece.avaliableMoves)
                 {
                     allMoves.Add(new KeyValuePair<Piece, Vector2Int>(piece, move));
@@ -211,10 +281,12 @@ protected override void SetGameState(GameState state)
             int index = UnityEngine.Random.Range(0, allMoves.Count);
             var choice = allMoves[index];
             StartCoroutine(ExecuteAIMoveCoroutine(choice.Key, choice.Value));
+            return true;
         }
         else
         {
             Debug.LogError("[AI] No fallback moves available. Game has ended.");
+            return false;
         }
     }
 

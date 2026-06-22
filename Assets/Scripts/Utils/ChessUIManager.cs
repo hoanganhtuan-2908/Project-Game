@@ -1,40 +1,32 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
-public class ChessUIManager : MonoBehaviour
+public class ChessUIManager : MonoBehaviour, IChessUIManager
 {
-    [Header("Dependencies")]
-    [SerializeField] private NetworkManager networkManager;
-
-    [Header("Buttons")]
-    [SerializeField] private Button whiteTeamButtonButton;
-    [SerializeField] private Button blackTeamButtonButton;
+    [Header("Screens")]
+    [SerializeField] private GameObject GameOverScreen;
+    [SerializeField] private GameObject PauseMenuScreen;
+    [SerializeField] private GameObject GameModeSelectionScreen;
 
     [Header("Texts")]
     [SerializeField] private TMP_Text finishText;
-    [SerializeField] private TMP_Text connectionStatus;
 
-    [Header("Screen Gameobjects")]
-    [SerializeField] private GameObject GameOverScreen;
-    [SerializeField] private GameObject ConnectScreen;
-    [SerializeField] private GameObject TeamSelectionScreen;
-    [SerializeField] private GameObject GameModeSelectionScreen;
-    [SerializeField] private GameObject PauseMenuScreen;
-
-    [Header("Other UI")]
+    [Header("Difficulty / Level Selection")]
     [SerializeField] private TMP_Dropdown gameLevelSelection;
 
-    [Header("Skins/Models UI")]
+    [Header("Skins")]
     [SerializeField] private TMP_Dropdown skinSelectionDropdown;
     [SerializeField] private List<ChessSkin> availableSkins;
 
     private ChessSkin selectedSkin;
     public ChessSkin SelectedSkin => selectedSkin;
+    public List<ChessSkin> AvailableSkins => availableSkins;
+
     public ChessLevel SelectedLevel
     {
         get
@@ -67,10 +59,9 @@ public class ChessUIManager : MonoBehaviour
         OnGameLaunched();
     }
 
-
     private void Start()
     {
-        // Tự động kích hoạt Multiplayer nếu có cờ báo từ MainMenu
+        // Tự động kích hoạt Multiplayer nếu có cờ báo từ MainMenu (nếu scene cũ cần tương thích)
         if (PlayerPrefs.GetInt("AutoStartMultiplayer", 0) == 1)
         {
             PlayerPrefs.SetInt("AutoStartMultiplayer", 0);
@@ -78,7 +69,7 @@ public class ChessUIManager : MonoBehaviour
             OnMultiPlayerModeSelected();
         }
     }
-        
+
     private void InitializeSkinSelection()
     {
         if (skinSelectionDropdown != null && availableSkins != null && availableSkins.Count > 0)
@@ -118,11 +109,9 @@ public class ChessUIManager : MonoBehaviour
         Debug.Log($"Level changed to: {(ChessLevel)value}");
     }
 
-    internal void OnGameLaunched()
+    public void OnGameLaunched()
     {
         if (GameOverScreen != null) GameOverScreen.SetActive(false);
-        if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(false);
-        if (ConnectScreen != null) ConnectScreen.SetActive(false);
         if (GameModeSelectionScreen != null) GameModeSelectionScreen.SetActive(true);
     }
 
@@ -134,71 +123,16 @@ public class ChessUIManager : MonoBehaviour
 
     public void OnMultiPlayerModeSelected()
     {
-        if (connectionStatus != null) connectionStatus.gameObject.SetActive(true);
-        if (GameOverScreen != null) GameOverScreen.SetActive(false);
-        if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(false);
-        if (ConnectScreen != null) ConnectScreen.SetActive(true);
-        if (GameModeSelectionScreen != null) GameModeSelectionScreen.SetActive(false);
-    }
-
-    internal void OnGameFinished(string winner)
-    {
-        if (GameOverScreen != null) GameOverScreen.SetActive(true);
-        if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(false);
-        if (ConnectScreen != null) ConnectScreen.SetActive(false);
-        if (finishText != null) finishText.text = string.Format("{0} won", winner);
-
-        // Phát nhạc thắng/thua
-        if (FMODAudioManager.Instance != null)
-        {
-            bool localPlayerWon = false;
-            if (activeController != null)
-            {
-                localPlayerWon = activeController.IsLocalPlayerWinner(winner);
-            }
-            FMODAudioManager.Instance.PlayGameFinishedTheme(localPlayerWon);
-        }
-    }
-
-    public void OnConnect()
-    {
-        if (networkManager != null)
-        {
-            networkManager.SetPlayerLevel(SelectedLevel);
-            networkManager.Connect();
-        }
-        else
-        {
-            Debug.LogError("NetworkManager is null. Cannot connect.");
-        }
-    }
-
-    public void SetConnectionStatusText(string status)
-    {
-        if (connectionStatus != null)
-        {
-            connectionStatus.text = status;
-        }
-    }
-
-    internal void ShowTeamSelectionScreen()
-    {
-        if (GameOverScreen != null) GameOverScreen.SetActive(false);
-        if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(true);
-        if (ConnectScreen != null) ConnectScreen.SetActive(false);
+        // Chuyển sang scene Multiplayer Lobbies
+        Time.timeScale = 1f;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MultiplayerPlayerLobbySence");
     }
 
     public void OnGameStarted()
     {
         if (GameOverScreen != null) GameOverScreen.SetActive(false);
-        if (TeamSelectionScreen != null) TeamSelectionScreen.SetActive(false);
-        if (ConnectScreen != null) ConnectScreen.SetActive(false);
-        if (connectionStatus != null) connectionStatus.gameObject.SetActive(false);
         if (GameModeSelectionScreen != null) GameModeSelectionScreen.SetActive(false);
-        if (PauseMenuScreen != null)
-        {
-            PauseMenuScreen.SetActive(false);
-        }
+        if (PauseMenuScreen != null) PauseMenuScreen.SetActive(false);
 
         // Bắt đầu phát nhạc trận đấu
         if (FMODAudioManager.Instance != null)
@@ -207,24 +141,30 @@ public class ChessUIManager : MonoBehaviour
         }
     }
 
-    public void SelectTeam(int team)
+    public void OnGameFinished(string winner)
     {
-        if (networkManager != null)
+        if (GameOverScreen != null) GameOverScreen.SetActive(true);
+        if (finishText != null) finishText.text = string.Format("{0} won", winner);
+
+        bool localPlayerWon = false;
+        if (activeController != null)
         {
-            networkManager.SetPlayerTeam(team);
+            localPlayerWon = activeController.IsLocalPlayerWinner(winner);
+        }
+
+        if (localPlayerWon)
+        {
+            if (WinUI.Instance != null) WinUI.Instance.ShowWin();
         }
         else
         {
-            Debug.LogError("NetworkManager is null. Cannot select team.");
+            if (LossUI.Instance != null) LossUI.Instance.ShowLoss();
         }
-    }
 
-    internal void RestrictTeamChoice(TeamColor occpiedTeam)
-    {
-        Button buttonToDeactivate = occpiedTeam == TeamColor.White ? whiteTeamButtonButton : blackTeamButtonButton;
-        if (buttonToDeactivate != null)
+        // Phát nhạc thắng/thua
+        if (FMODAudioManager.Instance != null)
         {
-            buttonToDeactivate.interactable = false;
+            FMODAudioManager.Instance.PlayGameFinishedTheme(localPlayerWon);
         }
     }
 
@@ -269,14 +209,13 @@ public class ChessUIManager : MonoBehaviour
             FMODAudioManager.Instance.PlayMenuTheme();
         }
 
-        // If we are in a gameplay scene (not MainMenu), load MainMenu scene
+        // Quay lại MainMenu Scene
         if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "MainMenu")
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
         }
         else
         {
-            // Fallback for single-scene setup: clean up and show the mode selector UI
             if (activeController != null)
             {
                 Board board = FindAnyObjectByType<Board>();
@@ -288,7 +227,6 @@ public class ChessUIManager : MonoBehaviour
                 Destroy(activeController.gameObject);
                 activeController = null;
             }
-
             OnGameLaunched();
         }
     }

@@ -2634,16 +2634,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e12c187c80b901c4290287154a97f86a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChessUIManager
-  networkManager: {fileID: 1006925412}
-  whiteTeamButtonButton: {fileID: 1106126725}
-  blackTeamButtonButton: {fileID: 642412583}
-  finishText: {fileID: 1804118512}
-  connectionStatus: {fileID: 480419040}
   GameOverScreen: {fileID: 1453068179}
-  ConnectScreen: {fileID: 252537359}
-  TeamSelectionScreen: {fileID: 94591864}
-  GameModeSelectionScreen: {fileID: 1605807246}
   PauseMenuScreen: {fileID: 1746295333}
+  GameModeSelectionScreen: {fileID: 1605807246}
+  finishText: {fileID: 1804118512}
   gameLevelSelection: {fileID: 1013897511}
   skinSelectionDropdown: {fileID: 711358212}
   availableSkins:
@@ -2754,8 +2748,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cfd572408230c24082621b7c1597ca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkManager
-  uiManager: {fileID: 913348943}
-  gameInitializer: {fileID: 1255095388}
 --- !u!4 &1006925413
 Transform:
   m_ObjectHideFlags: 0
@@ -4856,7 +4848,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1453068180
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4891,7 +4883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.41960785}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -6542,6 +6534,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraSetup
   mainCamera: {fileID: 1933383811}
+  focusTarget: {fileID: 0}
+  blackCameraYawOffset: 180
 --- !u!1 &1955125254
 GameObject:
   m_ObjectHideFlags: 0
