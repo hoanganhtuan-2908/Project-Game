@@ -13,9 +13,13 @@ public abstract class Board : MonoBehaviour
     [SerializeField] private bool bottomLeftIsSquareCenter = true;
 
     private Piece[,] grid;
+    private bool captureOccurredThisTurn = false;
+    private bool castleOccurredThisTurn = false;
     private Piece selectedPiece;
     private ChessGameController chessController;
     private SquareSelectorCreator squareSelector;
+
+    public ChessGameController ChessController => chessController;
 
     protected virtual void Awake()
     {
@@ -63,9 +67,71 @@ public abstract class Board : MonoBehaviour
 
     internal void OnSelectedPieceMoved(Vector2Int intCoords)
     {
-        TryToTakeOppositePiece(intCoords);
+        captureOccurredThisTurn = false;
+        castleOccurredThisTurn = false;
+        Vector2Int fromSquare = selectedPiece.occupiedSquare;
+        // Check if the move is a castling move before executing it
+        if (selectedPiece is King king)
+        {
+            if (intCoords == king.leftCastlingMove || intCoords == king.rightCastlingMove)
+            {
+                castleOccurredThisTurn = true;
+            }
+        }
+        // Check if the move is an en passant capture
+        bool enPassantOccurredThisTurn = false;
+        if (selectedPiece is Pawn && chessController != null && intCoords == chessController.enPassantTargetSquare)
+        {
+            enPassantOccurredThisTurn = true;
+        }
+        if (enPassantOccurredThisTurn)
+        {
+            // The captured pawn is on the same row as the capturing pawn, but same column as intCoords
+            Vector2Int capturedPawnCoords = new Vector2Int(intCoords.x, selectedPiece.occupiedSquare.y);
+            Piece capturedPawn = GetPieceOnSquare(capturedPawnCoords);
+            if (capturedPawn != null)
+            {
+                TakePiece(capturedPawn);
+                captureOccurredThisTurn = true;
+            }
+        }
+        else
+        {
+            TryToTakeOppositePiece(intCoords);
+        }
         UpdateBoardOnPieceMove(intCoords, selectedPiece.occupiedSquare, selectedPiece, null);
+        // Record move state in game controller
+        if (chessController != null)
+        {
+            chessController.RecordMove(selectedPiece, fromSquare, intCoords, captureOccurredThisTurn);
+        }
         selectedPiece.MovePiece(intCoords);
+        // Play FMOD audio based on turn action
+        if (FMODAudioManager.Instance != null)
+        {
+            if (castleOccurredThisTurn)
+            {
+                FMODAudioManager.Instance.PlayCastle();
+            }
+            else if (captureOccurredThisTurn)
+            {
+                FMODAudioManager.Instance.PlayCapture();
+            }
+            else
+            {
+                if (chessController != null)
+                {
+                    if (chessController.IsActivePlayerLocal())
+                    {
+                        FMODAudioManager.Instance.PlaySelfMove();
+                    }
+                    else
+                    {
+                        FMODAudioManager.Instance.PlayOppMove();
+                    }
+                }
+            }
+        }
         DeselectPiece();
         EndTurn();
     }
@@ -105,10 +171,10 @@ public abstract class Board : MonoBehaviour
             Debug.Log("[Board] CanPerformMove returned false.");
             return;
         }
-
         Vector2Int coords = CalculateCoordsFromPosition(inputPosition);
         Piece piece = GetPieceOnSquare(coords);
         Debug.Log(string.Format("[Board] Click at {0} -> coords {1}, piece {2}", inputPosition, coords, piece != null ? piece.name : "null"));
+
         if (selectedPiece)
         {
             if (piece != null && selectedPiece == piece)
@@ -117,12 +183,17 @@ public abstract class Board : MonoBehaviour
                 SelectPiece(coords);
             else if (selectedPiece.CanMoveTo(coords))
                 SelectedPieceMoved(coords);
+            else
+            {
+                // Played when the player tries to make an invalid move with a selected piece
+                if (FMODAudioManager.Instance != null)
+                {
+                    FMODAudioManager.Instance.PlayIllegalMove();
+                }
+            }
         }
-        else
-        {
-            if (piece != null && chessController.IsTeamTurnActive(piece.team))
-                SelectPiece(coords);
-        }
+        else if(piece != null && chessController.IsTeamTurnActive(piece.team))
+            SelectPiece(coords);
     }
 
     public abstract void SelectedPieceMoved(Vector2 coords);
@@ -224,11 +295,18 @@ public abstract class Board : MonoBehaviour
     {
         if (piece == null)
             return;
+        captureOccurredThisTurn = true; // Set flag when capture happens
 
         if (piece is King)
         {
             TeamColor winnerTeam = piece.team == TeamColor.White ? TeamColor.Black : TeamColor.White;
             bool localPlayerWon = chessController != null && chessController.IsLocalPlayerWinner(winnerTeam.ToString());
+
+            // Play FMOD win/lose theme immediately before timescale freeze
+            if (FMODAudioManager.Instance != null)
+            {
+                FMODAudioManager.Instance.PlayGameFinishedTheme(localPlayerWon);
+            }
 
             if (localPlayerWon)
             {
@@ -264,6 +342,10 @@ public abstract class Board : MonoBehaviour
     public void PromotePiece(Piece piece)
     {
         TakePiece(piece);
+        if (FMODAudioManager.Instance != null)
+        {
+            FMODAudioManager.Instance.PlayPromote();
+        }
         chessController.CreatePieceAndInitialize(piece.occupiedSquare, piece.team, typeof(Queen));
     }
 

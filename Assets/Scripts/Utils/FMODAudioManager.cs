@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using FMODUnity;
 using FMOD.Studio;
@@ -13,8 +13,19 @@ public class FMODAudioManager : MonoBehaviour
     [SerializeField] private EventReference winThemeEvent;
     [SerializeField] private EventReference loseThemeEvent;
 
+    [Header("SFX Events")]
+    [SerializeField] private EventReference selfMoveEvent;
+    [SerializeField] private EventReference oppMoveEvent;
+    [SerializeField] private EventReference captureEvent;
+    [SerializeField] private EventReference castleEvent;
+    [SerializeField] private EventReference checkedEvent;
+    [SerializeField] private EventReference promoteEvent;
+    [SerializeField] private EventReference illegalMoveEvent;
+    [SerializeField] private EventReference buttonClickEvent;
+
     [Header("FMOD Mixer Routing")]
     [SerializeField] private string musicBusPath = "bus:/Music";
+
 
     private EventInstance currentMusicInstance;
     private Bus musicBus;
@@ -58,18 +69,22 @@ public class FMODAudioManager : MonoBehaviour
 
     private void PlayEvent(EventReference fmodEvent)
     {
+        Debug.Log($"[FMODAudioManager] PlayEvent called. IsNull: {fmodEvent.IsNull}, Path: {fmodEvent.Path}");
         if (fmodEvent.IsNull) return;
+        
         // Dừng bài hát hiện tại
         StopCurrentMusic();
 
         currentMusicInstance = RuntimeManager.CreateInstance(fmodEvent);
+        Debug.Log($"[FMODAudioManager] Created instance for: {fmodEvent.Path}");
 
-        // Cập nhật vị trí 3D của âm thanh trùng với GameObject này (hoặc Camera)
-        // để tránh trường hợp bài hát là âm thanh 3D bị nhỏ/tắt tiếng do ở xa
-        var rigidbody = GetComponent<Rigidbody>();
-        RuntimeManager.AttachInstanceToGameObject(currentMusicInstance, transform, rigidbody);
+        // Phát âm thanh tại vị trí của Camera chính để tránh bị nhỏ/tắt tiếng do 3D spatialization
+        Transform targetTransform = Camera.main != null ? Camera.main.transform : transform;
+        var rigidbody = targetTransform.GetComponent<Rigidbody>();
+        RuntimeManager.AttachInstanceToGameObject(currentMusicInstance, targetTransform, rigidbody);
 
-        currentMusicInstance.start();
+        FMOD.RESULT result = currentMusicInstance.start();
+        Debug.Log($"[FMODAudioManager] Started instance. FMOD Result: {result}");
     }
 
 
@@ -96,7 +111,8 @@ public class FMODAudioManager : MonoBehaviour
         {
             // Chọn ngẫu nhiên 1 trong các bài nhạc nền gameplay
             int randomIndex = Random.Range(0, gameplayBGMEvents.Count);
-            PlayEvent(gameplayBGMEvents[randomIndex]);
+            EventReference selectedEvent = gameplayBGMEvents[randomIndex];
+            PlayEvent(selectedEvent);
         }
         else
         {
@@ -107,6 +123,7 @@ public class FMODAudioManager : MonoBehaviour
 
     public void PlayGameFinishedTheme(bool won)
     {
+        Debug.Log($"[FMODAudioManager] PlayGameFinishedTheme called. won: {won}");
         if (won)
         {
             PlayEvent(winThemeEvent);
@@ -142,5 +159,20 @@ public class FMODAudioManager : MonoBehaviour
     private void OnDestroy()
     {
         StopCurrentMusic();
+    }
+    public void PlaySelfMove() => PlayOneShot(selfMoveEvent);
+    public void PlayOppMove() => PlayOneShot(oppMoveEvent);
+    public void PlayCapture() => PlayOneShot(captureEvent);
+    public void PlayCastle() => PlayOneShot(castleEvent);
+    public void PlayChecked() => PlayOneShot(checkedEvent);
+    public void PlayPromote() => PlayOneShot(promoteEvent);
+    public void PlayIllegalMove() => PlayOneShot(illegalMoveEvent);
+    public void PlayButtonClick() => PlayOneShot(buttonClickEvent);
+    private void PlayOneShot(EventReference fmodEvent)
+    {
+        if (!fmodEvent.IsNull)
+        {
+            RuntimeManager.PlayOneShot(fmodEvent);
+        }
     }
 }

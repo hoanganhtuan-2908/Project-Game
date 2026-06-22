@@ -109,4 +109,9 @@ public class MultiplayerChessGameController : ChessGameController, IOnEventCallb
         }
         return false;
     }
+    public override bool IsActivePlayerLocal()
+    {
+        return IsLocalPlayersTurn();
+    }
+
 }

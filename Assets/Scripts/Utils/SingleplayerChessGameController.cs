@@ -65,6 +65,28 @@ protected override void SetGameState(GameState state)
 
     private IEnumerator MakeStockfishMoveCoroutine()
     {
+        // Check if AI can capture the human King directly on this turn
+        ChessPlayer aiPlayer = localPlayerTeam == TeamColor.White ? blackPlayer : whitePlayer;
+        ChessPlayer localPlayer = localPlayerTeam == TeamColor.White ? whitePlayer : blackPlayer;
+        Piece humanKing = localPlayer.GetPiecesOfType<King>().FirstOrDefault();
+        if (humanKing != null && board.HasPiece(humanKing))
+        {
+            Vector2Int kingPos = humanKing.occupiedSquare;
+            foreach (var piece in aiPlayer.activePieces)
+            {
+                if (board.HasPiece(piece))
+                {
+                    piece.SelectAvaliableSquares();
+                    if (piece.avaliableMoves.Contains(kingPos))
+                    {
+                        Debug.Log($"[AI] Direct King capture detected! Piece: {piece.name} at {piece.occupiedSquare} captures King at {kingPos}");
+                        StartCoroutine(ExecuteAIMoveCoroutine(piece, kingPos));
+                        yield break;
+                    }
+                }
+            }
+        }
+
         // 1. Generate FEN from current board layout
         string fen = GenerateFEN();
         Debug.Log($"[Stockfish AI] Generated FEN: {fen}");
@@ -132,7 +154,6 @@ protected override void SetGameState(GameState state)
                     Vector2Int toCoords = new Vector2Int(toX, toY);
 
                     Piece piece = board.GetPieceOnSquare(fromCoords);
-                    ChessPlayer aiPlayer = localPlayerTeam == TeamColor.White ? blackPlayer : whitePlayer;
                     if (piece != null && piece.team == aiPlayer.team)
                     {
                         piece.SelectAvaliableSquares();
@@ -154,11 +175,6 @@ protected override void SetGameState(GameState state)
         {
             Debug.LogWarning("[AI] No legal move.");
 
-            if (TryFinishIfLocalPlayerIsInCheck())
-            {
-                yield break;
-            }
-
             if (MakeFallbackMove())
             {
                 yield break;
@@ -171,24 +187,7 @@ protected override void SetGameState(GameState state)
         }
     }
 
-    private bool TryFinishIfLocalPlayerIsInCheck()
-    {
-        ChessPlayer localPlayer = localPlayerTeam == TeamColor.White ? whitePlayer : blackPlayer;
-        ChessPlayer opponent = localPlayerTeam == TeamColor.White ? blackPlayer : whitePlayer;
 
-        localPlayer.GenerateAllPossibleMoves();
-        opponent.GenerateAllPossibleMoves();
-
-        if (!opponent.CheckIfIsAttackigPiece<King>())
-        {
-            return false;
-        }
-
-        Debug.Log("[Game] Local player is in check while AI has no valid Stockfish move. Ending as loss.");
-        ShowLocalLoss();
-        SetGameState(GameState.Finished);
-        return true;
-    }
 
     private void ShowWinnerForNoLegalMove()
     {
@@ -268,7 +267,6 @@ protected override void SetGameState(GameState state)
             if (board.HasPiece(piece))
             {
                 piece.SelectAvaliableSquares();
-                aiPlayer.RemoveMovesEnablingAttackOnPieceOfType<King>(localPlayer, piece);
                 foreach (var move in piece.avaliableMoves)
                 {
                     allMoves.Add(new KeyValuePair<Piece, Vector2Int>(piece, move));
@@ -509,5 +507,9 @@ protected override void SetGameState(GameState state)
     public override bool IsLocalPlayerWinner(string winnerTeam)
     {
         return winnerTeam == localPlayerTeam.ToString();
+    }
+    public override bool IsActivePlayerLocal()
+    {
+        return activePlayer.team == localPlayerTeam;
     }
 }
