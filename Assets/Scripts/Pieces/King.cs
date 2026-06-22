@@ -21,8 +21,8 @@ public class King : Piece
     private Piece leftRook;
     private Piece rightRook;
 
-    private Vector2Int leftCastlingMove;
-    private Vector2Int rightCastlingMove;
+    public Vector2Int leftCastlingMove;
+    public Vector2Int rightCastlingMove;
 
     public override List<Vector2Int> SelectAvaliableSquares()
     {
@@ -37,19 +37,52 @@ public class King : Piece
     {
         leftCastlingMove = new Vector2Int(-1, -1);
         rightCastlingMove = new Vector2Int(-1, -1);
-        if (!hasMoved)
+        if (hasMoved) return;
+        var chessController = board.ChessController;
+        if (chessController == null) return;
+        TeamColor opponentTeam = team == TeamColor.White ? TeamColor.Black : TeamColor.White;
+        // 1. King must not be in check to start castling
+        if (chessController.IsSquareAttackedBy(occupiedSquare, opponentTeam)) return;
+        // Left Castling (Queenside)
+        leftRook = GetPieceInDirection<Rook>(team, Vector2Int.left);
+        if (leftRook && !leftRook.hasMoved)
         {
-            leftRook = GetPieceInDirection<Rook>(team, Vector2Int.left);
-            if (leftRook && !leftRook.hasMoved)
+            Vector2Int transit = occupiedSquare + Vector2Int.left;       // d1 / d8
+            Vector2Int destination = occupiedSquare + Vector2Int.left * 2; // c1 / c8
+            Vector2Int extra = occupiedSquare + Vector2Int.left * 3;       // b1 / b8
+            // Check if squares are free of pieces
+            bool pathFree = board.GetPieceOnSquare(transit) == null &&
+                            board.GetPieceOnSquare(destination) == null &&
+                            board.GetPieceOnSquare(extra) == null;
+            if (pathFree)
             {
-                leftCastlingMove = occupiedSquare + Vector2Int.left * 2;
-                avaliableMoves.Add(leftCastlingMove);
+                // King cannot pass through or land on an attacked square
+                if (!chessController.IsSquareAttackedBy(transit, opponentTeam) &&
+                    !chessController.IsSquareAttackedBy(destination, opponentTeam))
+                {
+                    leftCastlingMove = destination;
+                    avaliableMoves.Add(leftCastlingMove);
+                }
             }
-            rightRook = GetPieceInDirection<Rook>(team, Vector2Int.right);
-            if (rightRook && !rightRook.hasMoved)
+        }
+        // Right Castling (Kingside)
+        rightRook = GetPieceInDirection<Rook>(team, Vector2Int.right);
+        if (rightRook && !rightRook.hasMoved)
+        {
+            Vector2Int transit = occupiedSquare + Vector2Int.right;       // f1 / f8
+            Vector2Int destination = occupiedSquare + Vector2Int.right * 2; // g1 / g8
+            // Check if squares are free of pieces
+            bool pathFree = board.GetPieceOnSquare(transit) == null &&
+                            board.GetPieceOnSquare(destination) == null;
+            if (pathFree)
             {
-                rightCastlingMove = occupiedSquare + Vector2Int.right * 2;
-                avaliableMoves.Add(rightCastlingMove);
+                // King cannot pass through or land on an attacked square
+                if (!chessController.IsSquareAttackedBy(transit, opponentTeam) &&
+                    !chessController.IsSquareAttackedBy(destination, opponentTeam))
+                {
+                    rightCastlingMove = destination;
+                    avaliableMoves.Add(rightCastlingMove);
+                }
             }
         }
     }

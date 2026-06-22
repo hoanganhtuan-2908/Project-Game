@@ -21,6 +21,12 @@ public class CameraSetup : MonoBehaviour
         {
             whiteCameraPosition = mainCamera.transform.position;
             whiteCameraRotation = mainCamera.transform.rotation;
+
+            // Automatically add FMOD Studio Listener if not present
+            if (mainCamera.GetComponent<FMODUnity.StudioListener>() == null)
+            {
+                mainCamera.gameObject.AddComponent<FMODUnity.StudioListener>();
+            }
         }
     }
 

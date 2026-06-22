@@ -30,7 +30,10 @@ public class Pawn : Piece
             Piece piece = board.GetPieceOnSquare(nextCoords);
             if (!board.CheckIfCoordinatesAreOnBoard(nextCoords))
                 continue;
-            if (piece != null && !piece.IsFromSameTeam(this))
+
+            // Can capture if there is an opponent piece, OR if it's the active en passant target square
+            if ((piece != null && !piece.IsFromSameTeam(this)) ||
+                (board.ChessController != null && nextCoords == board.ChessController.enPassantTargetSquare))
             {
                 TryToAddMove(nextCoords);
             }
