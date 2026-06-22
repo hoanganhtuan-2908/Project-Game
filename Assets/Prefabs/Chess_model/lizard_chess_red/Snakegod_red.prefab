@@ -1,12 +1,72 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &2768453317863682243
+--- !u!1 &7026383728262038902
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4951758938757914415}
+  - component: {fileID: 1884506458679997924}
+  - component: {fileID: 4270855828143828575}
+  m_Layer: 0
+  m_Name: Snakegod_red
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4951758938757914415
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7026383728262038902}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6270763828520869843}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1884506458679997924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7026383728262038902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InstantTweener
+--- !u!114 &4270855828143828575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7026383728262038902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 710ca85d38434ed4a9567b030153722b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Queen
+  materialSetter: {fileID: 0}
+  avaliableMoves: []
+--- !u!1001 &5804158086329907256
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 4951758938757914415}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: ed744731bdfd1fa4d895fa6ad1fd4236, type: 3}
       propertyPath: m_LocalScale.x
@@ -67,42 +127,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ed744731bdfd1fa4d895fa6ad1fd4236, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: -9104254446401894279}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: ed744731bdfd1fa4d895fa6ad1fd4236, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2289858136857677190}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed744731bdfd1fa4d895fa6ad1fd4236, type: 3}
---- !u!1 &3074529515528588690 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ed744731bdfd1fa4d895fa6ad1fd4236, type: 3}
-  m_PrefabInstance: {fileID: 2768453317863682243}
+--- !u!4 &6270763828520869843 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ed744731bdfd1fa4d895fa6ad1fd4236, type: 3}
+  m_PrefabInstance: {fileID: 5804158086329907256}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-9104254446401894279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3074529515528588690}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62437e95b95592941b3ededbcaade926, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InstantTweener
---- !u!114 &2289858136857677190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3074529515528588690}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 710ca85d38434ed4a9567b030153722b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Queen
-  materialSetter: {fileID: 0}
-  avaliableMoves: []
