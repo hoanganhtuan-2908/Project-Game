@@ -24,6 +24,7 @@ public abstract class ChessGameController : MonoBehaviour
 
 
     protected GameState state;
+    public GameState State => state;
 
     private void Awake()
     {
