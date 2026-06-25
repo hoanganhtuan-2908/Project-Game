@@ -6403,6 +6403,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EscapeMenu
   menuPanel: {fileID: 1083717454}
   resumeButton: {fileID: 36052477}
+  restartButton: {fileID: 1515079511}
   quitButton: {fileID: 983116395}
   volumeSlider: {fileID: 2127048179}
   muteToggle: {fileID: 1919104303}
