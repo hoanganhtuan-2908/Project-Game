@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MultiplayerPlayerLobbySence.unity
     guid: 21b78283000f1324cba774d95f146810
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/SinglePlayer.unity
     guid: e2e67c7b5a76f7e429243978718c3255
   - enabled: 1

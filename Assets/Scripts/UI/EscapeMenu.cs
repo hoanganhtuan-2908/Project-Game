@@ -11,7 +11,6 @@ public class EscapeMenu : MonoBehaviour
 
     [Header("Buttons (Optional)")]
     [SerializeField] private Button resumeButton;
-    [SerializeField] private Button restartButton;
     [SerializeField] private Button quitButton;
 
     [Header("Audio Settings (Optional)")]
@@ -30,15 +29,33 @@ public class EscapeMenu : MonoBehaviour
 
     private void Start()
     {
+        // Fallback: If menuPanel is null, try to find a child GameObject that could be the panel
+        if (menuPanel == null)
+        {
+            if (transform.childCount > 0)
+            {
+                menuPanel = transform.GetChild(0).gameObject;
+            }
+            else
+            {
+                // Try searching for a GameObject named "PausePanel" or "MenuPanel" in the scene
+                var foundPanel = GameObject.Find("MenuPanel");
+                if (foundPanel == null) foundPanel = GameObject.Find("PausePanel");
+                if (foundPanel == null) foundPanel = GameObject.Find("PauseMenu");
+
+                if (foundPanel != null)
+                {
+                    menuPanel = foundPanel;
+                }
+            }
+        }
+
         // Wire up buttons if assigned
         if (resumeButton != null)
         {
             resumeButton.onClick.AddListener(ResumeGame);
         }
-        if (restartButton != null)
-        {
-            restartButton.onClick.AddListener(RestartGame);
-        }
+
         if (quitButton != null)
         {
             quitButton.onClick.AddListener(QuitToMainMenu);
@@ -46,6 +63,13 @@ public class EscapeMenu : MonoBehaviour
 
         // Initialize audio settings if assigned
         InitializeAudioSettings();
+
+        // Adjust UI elements depending on active scene (Multiplayer vs Singleplayer)
+        // Keep quitButton active in both Singleplayer and Multiplayer!
+        if (quitButton != null)
+        {
+            quitButton.gameObject.SetActive(true);
+        }
     }
 
     private void Update()
@@ -63,8 +87,16 @@ public class EscapeMenu : MonoBehaviour
         bool nextState = !menuPanel.activeSelf;
         menuPanel.SetActive(nextState);
 
-        // Pause/Resume game time in Singleplayer scene when menu is toggled
-        if (SceneManager.GetActiveScene().name == "SinglePlayer")
+        // Check if game is already finished (won/lost)
+        bool isGameOver = false;
+        var controller = FindAnyObjectByType<ChessGameController>();
+        if (controller != null && controller.State == GameState.Finished)
+        {
+            isGameOver = true;
+        }
+
+        // Pause/Resume game time in Singleplayer scene when menu is toggled (only if not game over)
+        if (SceneManager.GetActiveScene().name == "SinglePlayer" && !isGameOver)
         {
             Time.timeScale = nextState ? 0f : 1f;
         }
@@ -76,19 +108,18 @@ public class EscapeMenu : MonoBehaviour
         {
             menuPanel.SetActive(false);
         }
-        if (SceneManager.GetActiveScene().name == "SinglePlayer")
+
+        // Check if game is already finished (won/lost)
+        bool isGameOver = false;
+        var controller = FindAnyObjectByType<ChessGameController>();
+        if (controller != null && controller.State == GameState.Finished)
+        {
+            isGameOver = true;
+        }
+
+        if (SceneManager.GetActiveScene().name == "SinglePlayer" && !isGameOver)
         {
             Time.timeScale = 1f;
-        }
-    }
-
-    public void RestartGame()
-    {
-        ResumeGame();
-        var controller = FindAnyObjectByType<ChessGameController>();
-        if (controller != null)
-        {
-            controller.RestartGame();
         }
     }
 
@@ -96,6 +127,16 @@ public class EscapeMenu : MonoBehaviour
     {
         Time.timeScale = 1f;
         
+        // If in multiplayer, trigger surrender so the other player wins immediately
+        if (SceneManager.GetActiveScene().name == "MultiplayerSence")
+        {
+            var controller = FindAnyObjectByType<MultiplayerChessGameController>();
+            if (controller != null)
+            {
+                controller.Surrender();
+            }
+        }
+
         // Play main menu BGM
         if (FMODAudioManager.Instance != null)
         {
