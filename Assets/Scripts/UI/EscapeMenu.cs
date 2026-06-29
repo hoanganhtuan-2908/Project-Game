@@ -11,6 +11,7 @@ public class EscapeMenu : MonoBehaviour
 
     [Header("Buttons (Optional)")]
     [SerializeField] private Button resumeButton;
+    [SerializeField] private Button restartButton; // Optional restart button, can be null if not needed
     [SerializeField] private Button quitButton;
 
     [Header("Audio Settings (Optional)")]
@@ -54,6 +55,11 @@ public class EscapeMenu : MonoBehaviour
         if (resumeButton != null)
         {
             resumeButton.onClick.AddListener(ResumeGame);
+        }
+
+        if (restartButton != null)
+        {
+            restartButton.onClick.AddListener(RestartGame);
         }
 
         if (quitButton != null)
@@ -123,12 +129,20 @@ public class EscapeMenu : MonoBehaviour
         }
     }
 
+    public void RestartGame()
+    {
+        Time.timeScale = 1f;
+
+        // Reload the current scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
     public void QuitToMainMenu()
     {
         Time.timeScale = 1f;
         
         // If in multiplayer, trigger surrender so the other player wins immediately
-        if (SceneManager.GetActiveScene().name == "MultiplayerSence")
+        if (SceneManager.GetActiveScene().name == "MultiplayerScene")
         {
             var controller = FindAnyObjectByType<MultiplayerChessGameController>();
             if (controller != null)
